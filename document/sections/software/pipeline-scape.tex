@@ -1,0 +1,639 @@
+\section{Software}\label{section:methods:software}
+
+	% ========================================================================
+	% SOFTWARE
+	%
+	% This section documents the analysis software written for this
+	% dissertation. Each pipeline gets its own subsection; "Pipeline for SCAPE"
+	% is the first.
+	%
+	% Everything below was reconstructed from the source in
+	%   ~/Desktop/Boston_University/Devor_Lab/apical-dendrites-2025
+	% specifically code/Preprocessing-STEP1, code/Masks-STEP2, code/Traces-STEP3,
+	% the project README.md, and .kiro/steering/pipeline-context.md.
+	%
+	% Numbers quoted here are the values hardcoded in the scripts at the time of
+	% writing. Where a script's configuration varies per dataset, that is stated
+	% explicitly. \needsinput{...} blocks mark the places where the code shows
+	% WHAT is done but not WHY, and where the physical or biological rationale
+	% has to come from you.
+	% ========================================================================
+
+	\subsection{Pipeline for SCAPE}\label{section:methods:software:scape}
+
+		Volumetric \acrshort{scape} recordings were analysed with \mavca{}
+		(Mask-Assisted Volumetric Calcium Analysis), a modular pipeline written
+		for this dissertation in Python~3.11.
+		The pipeline takes a 4D ($T \times Z \times Y \times X$) image stack and
+		returns background-corrected $\Delta F/F_0$ time series for individual
+		dendritic segments, together with the segment masks, curation
+		provenance, and behavioural alignment needed to interpret them.
+
+		The design problem \mavca{} addresses is that apical dendrites are thin,
+		sparsely active, and densely interleaved.
+		A dendritic segment occupies only a few voxels across, fires in a small
+		fraction of frames, and lies close enough to its neighbours that a
+		generous region of interest will average several segments together.
+		Conventional soma-oriented segmentation, which looks for compact
+		high-contrast blobs that are active often enough to be found by
+		correlation or matrix factorisation, does not recover such structures.
+		\mavca{} therefore inverts the usual order: it first finds the moments
+		when something was active, uses only those moments to define spatial
+		masks, and only then extracts time series for the whole recording.
+
+		\needsinput{%
+			The paragraph above states the motivation as I inferred it from the
+			code's structure and from the note in
+			\texttt{pipeline-context.md} that apical dendrites are only 2--4
+			voxels wide. Please confirm or replace it with your own framing, and
+			say explicitly which established tools you tried or considered first
+			(Suite2p, CaImAn, CNMF-E, Ilastik, manual ImageJ tracing) and how
+			they failed on this data. A committee will ask ``why not Suite2p?''
+			and the answer is much stronger coming from you.%
+		}
+
+		\subsubsection{Data organisation and acquisition parameters}
+
+			Each recording is identified by a triplet of date, mouse, and run,
+			and lives in a fixed directory tree
+			(\texttt{scape-data/}$\langle$date$\rangle$\texttt{/}$\langle$mouse$\rangle$\texttt{/}$\langle$run$\rangle$) with
+			one subdirectory per pipeline stage: \texttt{raw/},
+			\texttt{preprocessed/}, \texttt{labelmaps/},
+			\texttt{labelmaps\_split/}, \texttt{labelmaps\_curated\_dynamic/},
+			\texttt{traces/}, \texttt{trigger/}, \texttt{behavior/} and
+			\texttt{overlays/}.
+			Stages read from the preceding directory and never overwrite their
+			input, so any stage can be re-run without repeating the ones before
+			it, and the intermediate state of a recording is visible on disk.
+
+			Voxels are strongly anisotropic, \SI{3.9}{\micro\meter} along $Z$ by
+			\SI{1.0}{\micro\meter} along $Y$ by \SI{1.2}{\micro\meter} along $X$,
+			so all volume and distance calculations in the pipeline are performed
+			in micrometres rather than voxels.
+			In the \acrshort{scape} geometry $Y$ corresponds to cortical depth,
+			with the pial surface at low $Y$, while $X$ and $Z$ are lateral;
+			maximum-intensity projections used for display and for mask review
+			are therefore taken as $Y \times X$ views.
+			$Z$ is the galvanometer sweep axis, acquired as 30 sequential steps
+			at approximately \SI{6.7}{\milli\second} per plane, with depth ($Y$)
+			and $X$ captured simultaneously within each $Z$ snapshot.
+
+			This scan order has a direct analytical consequence that the pipeline
+			exploits: because a full $Y$ column is acquired in a single snapshot,
+			latency measured \emph{along cortical depth} is free of scan-order
+			artefact, whereas apparent recruitment \emph{along $Z$} is
+			confounded by the sweep and requires subtracting
+			$z_\mathrm{centroid} \times \SI{6.7}{\milli\second}$ before
+			interpretation.
+
+			Volume rate depends on the acquisition configuration.
+			Single-channel 30-plane sessions were acquired at \SI{5}{\hertz};
+			deeper dual-channel sessions ($Z = 69$ and $Z = 55$) were acquired at
+			\SI{6}{\hertz}.
+			Frequency-independent measures (pairwise correlation, effective
+			dimensionality, participation fractions, event-class proportions) are
+			unaffected by this difference, but every quantity expressed per unit
+			time -- event rate, inter-event interval, event duration -- must be
+			computed with the volume rate of its own session.
+
+			\needsinput{%
+				Two things here need you.
+				First, the optical basis of the voxel geometry: why $Z$ is
+				sampled roughly four times more coarsely than $Y$ and $X$, what
+				sets the axial resolution of the \acrshort{scape} system, and
+				how the \acrshort{psf} compares to the
+				\SIlist{3.9;1.0;1.2}{\micro\meter} sampling. If the sampling is
+				coarser than the \acrshort{psf} along $Z$, say so, because it
+				bounds what within-mask propagation could ever be resolved.
+				Second, please give the excitation wavelength, power at the
+				sample, objective and \acrshort{na}, detection filters, and the
+				imaged volume in microns, plus the depth range spanned by $Y$
+				relative to the pial surface. I did not find these in the code
+				and will not invent them; they belong in
+				\cref{section:methods:optics} with a cross-reference here.%
+			}
+
+			\needsinput{%
+				The raw files carry names of the form
+				\texttt{runB\_run1\_rbp4\_132\_phpeb-reslice-bin.tif}, each with
+				a companion \texttt{-reslice-bin-dff.tif}, and the project
+				\texttt{README} refers to a \texttt{binimagej} variant. This
+				implies a reslice, a spatial binning, and a $\Delta F/F$
+				computation performed \emph{before} Python, presumably in ImageJ
+				or in the \acrshort{scape} acquisition software. Please describe
+				that upstream step: the binning factor and the axes it was
+				applied to, what the reslice reorients, how the pre-computed
+				$\Delta F/F$ stack was calculated, and whether any of it is
+				irreversible. It matters because the voxel size quoted above is
+				presumably post-binning, and because stage~M1.5 scores frames on
+				that externally-generated $\Delta F/F$ stack.%
+			}
+
+			\needsinput{%
+				\texttt{find\_events\_m1.py} crops three voxels from the deep
+				end of $Y$ (\texttt{Y\_CROP = 3}) on every recording, and the
+				number of initial seconds discarded is set per session
+				(\SI{14}{\second} for 2026-05-08, \SI{12}{\second} for
+				2026-05-12 and 2026-04-16). What artefact does the $Y$ crop
+				remove, and what is discarded at the start of a recording --
+				shutter or laser settling, indicator bleaching, or the animal
+				settling after head fixation? The per-session values need a
+				stated rule rather than a list.%
+			}
+
+		\subsubsection{Stage M1: event detection}
+
+			The first stage identifies the frames in which any activity occurred,
+			so that later segmentation can be restricted to them.
+
+			Each voxel's time series is first rescaled to the unit interval by
+			its own minimum and maximum over the recording, which equalises the
+			contribution of bright and dim voxels.
+			The spatial mean of each frame is then subtracted, removing
+			field-wide fluctuations shared across the whole volume, and the
+			result is smoothed with an isotropic Gaussian kernel of
+			$\sigma = 1$~voxel.
+			A single scalar activity score per frame is taken as the maximum over
+			the smoothed volume, so that a bright event confined to one dendrite
+			is not diluted by the inactive remainder of the field.
+
+			Slow drift in that score is removed multiplicatively.
+			A rolling baseline $B$ is computed as the 10th percentile within a
+			300-frame window, and the score $F$ is converted to
+			$F_\mathrm{corr} = F/B - 1$.
+			Robust $z$-scores are then formed with \emph{local} rather than
+			global statistics: within a 100-frame window the median and the
+			median absolute deviation are computed, and
+			\begin{equation}\label{equation:methods:m1z}
+				z(t) = \frac{F_\mathrm{corr}(t) - \mathrm{median}_\mathrm{loc}(t)}
+				            {1.4826 \cdot \mathrm{MAD}_\mathrm{loc}(t)},
+			\end{equation}
+			where the factor 1.4826 rescales the median absolute deviation to a
+			Gaussian-equivalent standard deviation.
+			Using local statistics keeps the detection threshold meaningful when
+			the noise level itself changes over the course of a recording.
+
+			Events are extracted from $z(t)$ by hysteresis rather than by a
+			single threshold: an event opens when $z$ rises above $0.3$ and
+			closes only when $z$ falls below $-0.5$, and is retained only if it
+			lasts at least three frames.
+			Retained events separated by no more than two frames are merged, and
+			each is exported as a mini-stack extending five frames either side of
+			its extent, together with a table of event onsets, offsets and
+			durations in both frames and seconds.
+			The asymmetric threshold pair means a segment that is unambiguously
+			recruited is followed until it has clearly returned to baseline,
+			rather than being fragmented into several short detections whenever
+			$z$ dips momentarily.
+
+			\needsinput{%
+				The thresholds ($0.3$ opening, $-0.5$ closing, three-frame
+				minimum, two-frame merge gap, five-frame crop radius) are the
+				values in the script, but the code does not record how they were
+				chosen. Were they set by sweeping against manually scored
+				events, by visual inspection, or by a target false-positive
+				rate? A sentence on provenance, and ideally a supplementary
+				sensitivity check showing that the event count is stable across a
+				range of thresholds, would make this stage defensible. Note also
+				that the three-frame minimum is \SI{600}{\milli\second} at
+				\SI{5}{\hertz} but \SI{500}{\milli\second} at \SI{6}{\hertz} --
+				worth stating whether the criterion is meant to be in frames or
+				in time.%
+			}
+
+			\needsinput{%
+				Subtracting the spatial mean of each frame is appropriate for
+				\emph{detecting} events, but \texttt{pipeline-context.md}
+				records that it makes the resulting stack unusable for
+				neuropil-contamination tests, because removing a per-frame
+				spatial mean forces in-mask and out-of-mask signals to
+				anticorrelate at $r \approx -0.97$ as an arithmetic artefact.
+				This is an important and easily-misread point. Please confirm
+				my reading, and confirm that every contamination or
+				neuropil analysis reported in the results chapters was run on
+				raw rather than mean-subtracted data.%
+			}
+
+		\subsubsection{Stage M1.5: best-frame selection}
+
+			Segmenting from every frame of an event is wasteful and adds noise,
+			so this stage selects the few frames in which dendritic structure is
+			clearest.
+
+			Frames are scored for \emph{sparse brightness}.
+			Each candidate frame is reduced to a maximum-intensity projection
+			over the fifteen most superficial $Z$ planes, high-pass filtered by
+			subtracting a heavily blurred copy of itself ($\sigma = 15$~voxels)
+			and clamping negative values to zero, and scored as the difference
+			between its 99.9th and 60th intensity percentiles.
+			A frame containing a few bright thin structures against a dark
+			background scores highly; one that is uniformly bright, whether from
+			background or from a motion artefact, does not.
+
+			Before scoring, the lowest-scoring frame of the event is taken as a
+			static-background estimate and $0.8$ times it is subtracted from
+			every frame, with negatives clamped to zero.
+			Scaling by less than unity deliberately under-subtracts, so that
+			dimmer dendrites survive the operation.
+			Up to five frames are then retained per event, constrained to be at
+			least three frames apart, and any frame scoring below half the best
+			frame's score is discarded.
+			Each retained frame is written both as a 3D volume, for use by the
+			segmentation stage, and as a contrast-stretched projection for visual
+			inspection.
+
+			\needsinput{%
+				Why the fifteen most superficial $Z$ planes? Given
+				\SI{3.9}{\micro\meter} $Z$ sampling this is a
+				\SI{58.5}{\micro\meter} slab out of a 30-plane volume, so
+				scoring deliberately ignores half the acquired depth. Is that
+				because the apical tuft sits in that slab, because the deeper
+				planes are dominated by out-of-focus light, or for another
+				reason? The same question applies to stage M2's exclusion of the
+				most superficial 18\% of $Y$ from thresholding, which the code
+				comments attribute to ``surface''. Naming the physical structure
+				being excluded in each case -- and confirming the two are
+				independent decisions on different axes -- would close an
+				obvious gap.%
+			}
+
+		\subsubsection{Stage M2: automatic segmentation}
+
+			Masks are proposed automatically from the best frames and event
+			crops. Each crop is enhanced by subtracting a heavily blurred copy
+			from a lightly smoothed one and clamping to positive values, which
+			suppresses slowly-varying background while preserving thin
+			structures. The most superficial 18\% of $Y$ is excluded from
+			threshold estimation.
+
+			Detection is a seeded hysteresis in space.
+			Within each of the four strongest temporal peaks in the crop
+			(constrained to be at least five frames apart), a temporal
+			maximum-intensity projection over a ten-frame window is thresholded
+			twice: at the 99.7th percentile to give high-confidence seeds, and at
+			the 96.5th percentile to give a permissive candidate set.
+			Connected components of the candidate set are retained only if they
+			contain a seed.
+			The result is that a structure must be unambiguously bright
+			\emph{somewhere} to be admitted at all, but once admitted it is
+			followed out to its dimmer extent -- which is what recovers a thin
+			dendrite whose distal portion is faint.
+
+			Three optional enhancements address specific failure modes and were
+			enabled in the configuration used for the recordings analysed here.
+			A Sato vesselness filter over scales
+			$\sigma \in \{0.5, 1, 2, 3, 4, 5\}$, thresholded at the 97th
+			percentile for seeds and the 95th for candidates, responds to
+			elongated tubular structures and improves recovery of trunks.
+			An intensity-growth step dilates accepted masks three times, keeping
+			only voxels above the 96th intensity percentile, which fills trunk
+			bodies that the high-pass enhancement had hollowed out.
+			A minimum-intensity projection thresholded at the 2nd percentile
+			detects dark outlines, with a \SI{5000}{\micro\meter\cubed} floor.
+			Seeds from stage M1.5 are unioned with the automatically detected
+			candidates.
+
+			Proposed masks are then cleaned and filtered: per-slice
+			morphological opening and closing (kernel sizes 1 and 5), removal of
+			slices containing fewer than seven pixels, 3D connected-component
+			labelling, a volume floor of \SI{6000}{\micro\meter\cubed} with no
+			upper limit, relaxed geometry filters requiring a minimum $Y$ extent
+			and elongation, and finally deduplication of any pair whose Dice
+			overlap exceeds $0.70$. At most 255 masks are kept per recording.
+
+			\needsinput{%
+				Three points need your physical judgement.
+				(i)~The \SI{6000}{\micro\meter\cubed} volume floor -- what
+				dendrite length does that correspond to at these voxel
+				dimensions, and what is the smallest structure you intend to
+				accept? Expressing the floor as an equivalent length would be
+				far more interpretable to a reader than a volume.
+				(ii)~The Sato scales are in voxel units, which are anisotropic,
+				so a given $\sigma$ means \SI{3.9}{\micro\meter} along $Z$ but
+				\SI{1.0}{\micro\meter} along $Y$. Please confirm this was
+				intended, and if the filter was applied to a projection or to
+				resampled isotropic data, say which.
+				(iii)~The minimum-intensity projection step detects \emph{dark}
+				structures, which the code comments call ``dark shadow masks
+				from moving trunks''. What is physically dark here -- shadowing
+				by a vessel, a trunk displaced by motion, or something else?
+				This is unusual enough that a reader will stop at it, and it
+				needs one clear sentence.%
+			}
+
+		\subsubsection{Stage M2b: splitting merged masks}
+
+			Automatic segmentation sometimes fuses neighbouring dendrites into a
+			single mask. Two remedies are available: an automatic
+			distance-transform watershed that cuts at geometric constrictions,
+			and an interactive \napari{} tool providing polyline cut and erase
+			operations.
+
+			One decision here is deliberate and worth stating plainly.
+			Roughly \SI{48}{\percent} of split masks consist of a genuine
+			dendritic body joined to a stray blob by a neck one voxel wide, and
+			such necks are separated by a single erosion.
+			Automating that erosion was rejected, because apical dendrites are
+			themselves only two to four voxels across and the same operation that
+			removes a spurious neck can amputate a real dendrite.
+			Neck separation is therefore performed under visual inspection rather
+			than offline, accepting slower curation in exchange for not silently
+			truncating the structures the study is about.
+
+		\subsubsection{Stage M3: mask curation}
+
+			Every mask is inspected individually in \napari{} against its
+			neighbours and either kept, deleted, or edited.
+			Keyboard-driven operations support merging, subtraction, retaining
+			only the largest connected component, erasing the component under
+			the cursor, and lasso selection applied across all $Z$ planes.
+
+			Curation is logged rather than merely applied.
+			Deletions are appended to \texttt{curation\_log.csv} and merges to
+			\texttt{merge\_log.csv}, masks are renumbered sequentially after any
+			edit, and destructive operations write a timestamped backup of the
+			mask directory first.
+			A classifier trained on accumulated keep/delete decisions
+			(\texttt{mask\_classifier.py}) is available to pre-screen proposals.
+
+			\needsinput{%
+				This subsection needs the quantities that make manual curation
+				auditable: how many masks were proposed and how many survived,
+				per recording and in total; the main reasons for rejection; and
+				whether curation was blind to condition. If any subset was
+				curated twice, by you on separate occasions or by a second
+				person, report the agreement -- it is the single most effective
+				answer to the objection that hand-curated masks are subjective.
+				Please also say whether the classifier was actually used for the
+				results reported in this dissertation or was only prototyped; the
+				code exists but I cannot tell from it which datasets, if any, it
+				was applied to, and the distinction matters for reproducibility.%
+			}
+
+		\subsubsection{Stage M4: trace extraction}
+
+			Time series are extracted from curated masks for the full recording.
+
+			A per-voxel baseline volume $F_0$ is computed as the 10th percentile
+			over time, after discarding the initial seconds of the recording, and
+			relative fluorescence is formed voxel-wise as
+			$\Delta F/F_0 = (F - F_0)/F_0$.
+			A low percentile rather than a mean is used so that the baseline
+			reflects the quiescent state even for segments that are active for a
+			substantial fraction of the recording.
+
+			Each mask is then decomposed into a core and a surrounding shell.
+			The core is the mask eroded by a unit ball, which discards the
+			boundary voxels most likely to contain background; for segments too
+			thin to survive erosion the mask is used unchanged.
+			The shell is the difference between dilations of the mask by radius~3
+			and radius~2, giving a ring one voxel thick and separated from the
+			mask by a one-voxel gap.
+			The reported trace is the difference of their spatial means,
+			\begin{equation}\label{equation:methods:m4}
+				\frac{\Delta F}{F_0}(t) =
+				\left\langle \frac{\Delta F}{F_0} \right\rangle_{\mathrm{core}}(t)
+				-
+				\left\langle \frac{\Delta F}{F_0} \right\rangle_{\mathrm{shell}}(t).
+			\end{equation}
+			The gap exists so that light from the dendrite itself, spread into
+			neighbouring voxels by the point spread function, does not enter the
+			background estimate and cause the signal to be subtracted from
+			itself.
+
+			Residual motion artefacts appear as sharp negative excursions and are
+			repaired rather than removed: frames with $\Delta F/F_0 < -0.5$ or a
+			frame-to-frame decrement below $-0.3$ are flagged, the flag is
+			widened by one frame on each side, and flagged samples are replaced
+			by linear interpolation from their neighbours.
+			Traces are finally smoothed along time with a Gaussian of
+			$\sigma = 0.5$~frames.
+			Volumes are streamed in chunks of 120 frames so that memory use is
+			independent of recording length.
+
+			This local background subtraction is not a cosmetic step, and its
+			omission produced a substantial artefact during development.
+			In one field of view, traces extracted from mask cores alone gave a
+			mean pairwise correlation of $0.91$ across dendrites, implying
+			near-total co-activation; the identical masks with shell subtraction
+			applied gave $0.06$.
+			Independent testing showed that a field-wide signal is present
+			throughout the imaged volume in every recording, correlating at
+			$r \approx 0.99$ between in-mask and out-of-mask regions of raw data,
+			so the discriminating step is whether that shared signal is removed
+			locally. Restricting the core more aggressively did not substitute
+			for shell subtraction.
+
+			\needsinput{%
+				The field-wide signal removed by shell subtraction needs a
+				physical identification from you -- haemodynamic absorption,
+				out-of-focus fluorescence from neuropil, laser power
+				fluctuation, brain motion, or a combination. It is present in
+				all recordings at $r \approx 0.99$, so it is a real property of
+				the preparation rather than a per-session defect, and the
+				results chapters lean on the claim that subtracting it is
+				legitimate rather than that it discards signal. Please also
+				comment on whether the one-voxel gap is sufficient given the
+				axial \acrshort{psf}: along $Y$ one voxel is
+				\SI{1}{\micro\meter}, but a radius-3 ball spans
+				\SI{11.7}{\micro\meter} along $Z$, so the shell is far from
+				isotropic in physical space.%
+			}
+
+			\needsinput{%
+				Two smaller choices to justify. First, the artefact rule
+				replaces flagged frames by interpolation rather than marking
+				them missing, which means an interpolated sample is
+				indistinguishable from a measured one downstream; please state
+				what fraction of frames this affected and confirm that event
+				detection on these traces cannot fire on interpolated segments.
+				Second, smoothing with $\sigma = 0.5$~frames is mild but is
+				applied before any event statistics are computed -- worth
+				stating whether the reported event amplitudes and durations come
+				from smoothed or unsmoothed traces.%
+			}
+
+		\subsubsection{Concatenation across runs and shared masks}
+
+			Consecutive runs frequently image the same field of view, and
+			analyses that follow a given dendrite across runs require that mask
+			identities refer to the same physical structure.
+			Masks are curated once and applied to sibling runs by reference,
+			rather than curated independently per run.
+			Which runs legitimately share masks was verified by hashing the
+			curated mask sets and confirming byte-identity, because a matching
+			field of view is not sufficient -- a merge applied to one run and not
+			its sibling silently breaks the correspondence.
+			Cross-run analyses keyed on mask identity are restricted to verified
+			identical-mask groups.
+
+			For concatenated extraction, $F_0$ is recomputed independently for
+			each run rather than pooled across the concatenation, so that a shift
+			in baseline between runs is not read as a signal change.
+			Slow bleaching is removed by fitting an exponential.
+			Run boundaries are retained and marked in all concatenated outputs.
+
+			\needsinput{%
+				The bleaching correction needs its model stated: a single
+				exponential fitted to what -- each trace individually, the field
+				mean, or the raw baseline -- and over what interval. Please also
+				say whether bleaching was corrected in the primary
+				single-run analyses or only in concatenated ones, since the
+				scripts differ in this respect, and whether an exponential was
+				adequate or merely convenient.%
+			}
+
+		\subsubsection{Grouping masks into branches}
+
+			Because segmentation operates on activity rather than on morphology,
+			one dendritic branch may be represented by several masks.
+			Candidate groupings are proposed by combining spatial and temporal
+			evidence: pairs of masks whose Jaccard overlap exceeds $0.05$ and
+			whose traces correlate above $0.3$ during active periods, with at
+			least ten active frames available, are linked, and connected sets of
+			linked masks are treated as one branch.
+			Spatial adjacency graphs built with a \SI{4}{\micro\meter} radius
+			were also used to reconstruct branch families and assign a branch
+			order and a distance to the deepest mask.
+
+			This reconstruction is fragile.
+			Its output is sensitive to the adjacency threshold, and quantities
+			derived from it were found to be unstable: the relationship between
+			branch order and event rate changed sign between fields of view and
+			did not survive a change of adjacency criterion.
+			Accordingly, morphological claims in this dissertation are restricted
+			to measures that do not depend on family reconstruction -- cortical
+			depth, mask volume, mask length -- and event classes defined by
+			reconstructed subtrees are reported as exploratory only.
+
+			\needsinput{%
+				This is a limitation stated on the strength of the code's own
+				notes, and it should be yours to phrase rather than mine, since
+				it constrains what the results chapters may claim. If you have
+				since improved the reconstruction, or have anatomical ground
+				truth for even a handful of branches, that would change the
+				conclusion and should replace this paragraph.%
+			}
+
+		\subsubsection{Alignment with behavioural signals}
+
+			Behavioural measurements are acquired on separate clocks and must be
+			brought onto the imaging timebase before any coupling is computed.
+			Accelerometer samples carry a timestamp already aligned to the
+			\acrshort{scape} clock and are used directly, taking the raw
+			magnitude channel.
+			Pupil and whisker traces are acquired by a separate camera and
+			require an explicit offset, obtained by comparing the rising edges of
+			the camera exposure trigger with those of the imaging trigger
+			recorded in the same file; this offset is applied before any
+			cropping. The imaging trigger is a sparse start trigger rather than a
+			per-frame pulse, so frame times are reconstructed from the start edge
+			and the volume rate.
+
+			Coupling between calcium and behaviour is quantified with
+			event-triggered averages rather than whole-trace correlation.
+			The signals differ in characteristic frequency, and a calcium
+			transient and a behavioural variable can be reliably locked in time
+			while correlating with opposite sign over the full trace -- in one
+			recording a sharp calcium rise preceded an eye movement accompanied
+			by a \emph{decrease} in pupil diameter. A whole-trace Pearson
+			coefficient would misrepresent such a relationship.
+
+			\needsinput{%
+				Please supply the behavioural acquisition details the code does
+				not contain: camera model and frame rate (the analysis assumes
+				\SI{10}{\hertz} for pupil), how pupil diameter was extracted and
+				with what software, where the accelerometer was mounted and what
+				its magnitude channel physically measures, and how whisking was
+				quantified. Also state the measured magnitude and jitter of the
+				camera-to-imaging offset, since the correction is only as good
+				as that estimate, and note that two dual-channel sessions have
+				pupil and whisker recordings but no accelerometer file.%
+			}
+
+		\subsubsection{Implementation and availability}
+
+			\mavca{} is implemented in Python~3.11 and depends on
+			NumPy~2.2.5, SciPy~1.15.2, scikit-image~0.25.2,
+			scikit-learn~1.6.1, tifffile~2025.3.30, zarr~3.0.7,
+			pandas~2.2.3, Matplotlib~3.10.1 and \napari{}~0.6.0 for interactive
+			curation; the pinned environment is recorded in
+			\texttt{requirements.txt} and checked by \texttt{verify\_env.py}.
+			Stage parameters are declared as named constants at the head of each
+			script, and the values used for this dissertation are those listed in
+			\cref{table:methods:mavca}.
+
+			\needsinput{%
+				Decide where the code will live and add it here plus in
+				\cref{section:methods:availability}: a public repository with a
+				release tag and DOI (Zenodo will mint one from a GitHub
+				release), and a licence. Two practical caveats to resolve before
+				release, both visible in the code -- absolute paths under
+				\texttt{/Users/daria/\ldots} are hardcoded in every script, and
+				dataset selection is by editing constants rather than by
+				argument, so a reader could not run it as-is. Neither affects
+				the validity of the analysis, but both affect the
+				reproducibility claim, and it is better to state the limitation
+				than to have a reader discover it.%
+			}
+
+			% ----------------------------------------------------------------
+			% Parameter table. Values transcribed from the scripts as of the
+			% time of writing; update if you retune anything.
+			% ----------------------------------------------------------------
+			\begin{table}[htbp]
+				\centering
+				\caption[\mavca{} pipeline stages and parameters]{
+					Stages of the \mavca{} pipeline for \acrshort{scape} data,
+					with the principal parameter values used in this
+					dissertation. Percentiles are of intensity unless stated
+					otherwise; volumes are in physical units using a voxel size
+					of \SIlist{3.9;1.0;1.2}{\micro\meter} along $Z$, $Y$ and
+					$X$.
+				}\label{table:methods:mavca}
+				\begin{singlespace}
+				\begin{tabular}{@{}llp{0.44\textwidth}@{}}
+					\toprule
+					Stage & Purpose & Principal parameters \\
+					\midrule
+					M1   & Event detection
+					     & Gaussian $\sigma = 1$ voxel; rolling baseline 10th
+					       percentile over 300 frames; local median and
+					       \acrshort{mad} over 100 frames; hysteresis
+					       $z > 0.3$ to $z < -0.5$; minimum 3 frames; merge gap
+					       2 frames; crop radius 5 frames \\
+					\addlinespace
+					M1.5 & Best-frame selection
+					     & Score $=$ $P_{99.9} - P_{60}$ after high-pass
+					       $\sigma = 15$; temporal background $0.8\times$
+					       quietest frame; top 15 $Z$ planes; up to 5 frames per
+					       event, $\geq 3$ frames apart; score floor $0.5\times$
+					       best \\
+					\addlinespace
+					M2   & Automatic segmentation
+					     & 4 temporal peaks $\geq 5$ frames apart; 10-frame
+					       temporal projection; seed $P_{99.7}$, candidate
+					       $P_{96.5}$; Sato scales 0.5--5; growth at $P_{96}$,
+					       3 dilations; volume $\geq$
+					       \SI{6000}{\micro\meter\cubed}; Dice deduplication
+					       $0.70$ \\
+					\addlinespace
+					M2b  & Splitting merged masks
+					     & Distance-transform watershed; interactive polyline
+					       cut and erase; neck separation not automated \\
+					\addlinespace
+					M3   & Curation
+					     & Manual, logged to \texttt{curation\_log.csv} and
+					       \texttt{merge\_log.csv}; sequential renumbering;
+					       timestamped backups \\
+					\addlinespace
+					M4   & Trace extraction
+					     & $F_0 =$ 10th percentile over time; core $=$ erosion
+					       by ball(1); shell $=$ dilation ball(3) minus
+					       dilation ball(2); artefact threshold
+					       $\Delta F/F_0 < -0.5$ or decrement $< -0.3$;
+					       smoothing $\sigma = 0.5$ frames \\
+					\bottomrule
+				\end{tabular}
+				\end{singlespace}
+			\end{table}

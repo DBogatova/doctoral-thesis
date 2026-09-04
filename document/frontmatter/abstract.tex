@@ -9,22 +9,16 @@
 % searchable in ProQuest.
 % ============================================================================
 
-% (1) THE PROBLEM -- what is unknown, and why it matters.
-TODO: Open with two or three sentences establishing the gap your dissertation
-addresses. State the biological or engineering question plainly, without
-citations, and without acronyms that you have not spelled out.
-
-% (2) THE METHODS -- what you actually did.
-TODO: Summarize your experimental approach in three to five sentences: the
-model system, the measurement modality, the manipulation, and the analysis.
-Name the techniques explicitly, since these are the terms by which other
-researchers will find this work.
-
-% (3) THE RESULTS -- what you found.
-TODO: Give the principal findings of each results chapter, one to two
-sentences each. Report direction and magnitude of effects rather than
-promising that results "are presented".
-
-% (4) THE CONCLUSIONS -- what it means.
-TODO: Close with the interpretation, the limitations that genuinely constrain
-it, and the implication for the field.
+Apical dendrites of layer 5 pyramidal cells (L5PCs) are critical integrative hubs in cortical circuits. 
+The repertoire of their activity patterns, including $\mathrm{Ca}^{2+}$ and NMDA spikes, varies across brain states.
+However, the relationship between neuromodulatory activity and the statistical properties of dendritic $\mathrm{Ca}^{2+}$ and NMDA spikes remains unclear.
+In this study, we performed volumetric imaging to characterize spontaneous $\mathrm{Ca}^{2+}$ dynamics in the apical dendrites of L5PCs in awake, head-fixed mice. 
+We used Rbp4-Cre mice, retro-orbitally injected with PHP.eB AAVs to express GCaMP6s in L5PCs, and a red fluorescent acetylcholine (ACh) sensor GRAB-ACh. 
+Using light sheet microscopy (SCAPE-2.0, Voleti et al. 2019) we imaged spontaneous $\mathrm{Ca}^{2+}$ and ACh activity in the primary somatosensory (SI) cortex at a volumetric rate of $\SI{5}{\hertz}$ with a $400 \times 200 \times 150 \,\mathrm{\mu m}^3$ field of view, capturing the top $\approx 150 \,\mathrm{\mu m}$.
+Simultaneously, we acquired behavior readouts: the eye pupil diameter, whisking, and accelerometer-based body movement. 
+Data were analyzed using a custom Python toolbox for detection and segmentation of dendritic events from volumetric time series.
+Our results show high correlation between global (averaged within the volume) dendritic $\mathrm{Ca}^{2+}$ dynamics, ACh, and the behavior readouts.
+Activity-dependent segmentation of dendritic regions of interest (ROIs) revealed several types of events including vertically oriented putative $\mathrm{Ca}^{2+}$ spikes engulfing the nexus and apical trunk as well as $\mathrm{Ca}^{2+}$ transients localized to specific dendritic branches (putative NMDA-dependent synaptic events).
+The probability of putative $\mathrm{Ca}^{2+}$ spikes increased with an increase in ACh. 
+To investigate the relationship between dendritic $\mathrm{Ca}^{2+}$ activity and somatic spiking, we used random access 2-photon microscopy (Femto3D Atlas, Femtonics). 
+Our preliminary data suggest that most of the events observable within the top $\approx 150 \,\mathrm{\mu m}$ correspond to synaptic inputs and dendritic $\mathrm{Ca}^{2+}$ spikes rather than back-propagated action potentials.

@@ -23,6 +23,8 @@ document/
 ├── sections/
 │   ├── introduction.tex
 │   ├── methods.tex       # Materials and Methods
+│   ├── software/
+│   │   └── pipeline-scape.tex   # §Software → Pipeline for SCAPE (MAVCA)
 │   ├── study-one.tex     # results chapter
 │   ├── study-two.tex     # results chapter
 │   └── discussion.tex
@@ -59,6 +61,41 @@ It re-typesets rather than scaling the resume's own `main_resume.pdf`, whose
 0.75″ margins would have to shrink to fit — dropping the 11 pt body text to
 about 9.4 pt, below the 10 pt floor in guide §1.1.2. The script warns if the CV
 exceeds the three-to-four pages suggested by guide §1.9.
+
+## Software section
+
+`sections/software/` documents the analysis code written for this dissertation.
+It is inputted from `methods.tex` as `\section{Software}`, with one subsection
+per pipeline; the first is `pipeline-scape.tex` (Pipeline for SCAPE, the MAVCA
+pipeline). Add further pipelines as sibling files and `\input` them alongside it.
+
+The content of `pipeline-scape.tex` was transcribed from the source in
+`~/Desktop/Boston_University/Devor_Lab/apical-dendrites-2025` — `README.md`,
+`.kiro/steering/pipeline-context.md`, and the `Preprocessing-STEP1`,
+`Masks-STEP2` and `Traces-STEP3` scripts. Every parameter quoted is the value
+hardcoded in those scripts. **If you retune a stage, update the prose and
+Table 2.2 to match**, since nothing here is generated from the code
+automatically.
+
+## Drafting notes: `\needsinput`
+
+`\needsinput{...}` marks a place where the text needs your judgement — a
+physical or biological rationale, a number to look up, or a claim that should
+not be made until it is checked. It renders as a marked dark-red paragraph so
+nothing slips into a submitted draft unnoticed.
+
+```bash
+# find every outstanding note
+grep -rn "needsinput" document/sections
+```
+
+To hide them all, define `\finaldraft` at the top of `main.tex`, or build with:
+
+```bash
+pdflatex "\def\finaldraft{}\input{main}"
+```
+
+Resolve or hide every note before sending the draft to `grsrec@bu.edu`.
 
 ## How to compile
 
@@ -97,12 +134,15 @@ Requirements this template already satisfies:
 
 Things to check before submitting:
 
+- Resolve every `\needsinput` note, or hide them with `\finaldraft`
+  (`grep -rn "needsinput" document/sections`).
 - Delete the List of Tables / List of Figures if the final document has none;
   keep them if it has any. Both are currently enabled in `main.tex`.
 - If you are registered in **Biomedical Engineering** rather than a GRS
   program, `\department` in `meta.tex` must read `College of Engineering`.
 - Consider setting `colorlinks=false` in `preamble.tex` for the submitted PDF.
 - Note any previously published chapters on the copyright page (guide §1.3.2).
+- Regenerate the CV (`bash document/cv/build-cv.sh`) if the resume changed.
 
 ## Submission checklist
 

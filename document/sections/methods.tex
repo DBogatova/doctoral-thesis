@@ -189,6 +189,12 @@
 	% ------------------------------------------------------------------------
 	\section{Data processing}\label{section:methods:processing}
 
+		For \acrshort{scape} recordings, every step from the raw stack to
+		$\Delta F/F_0$ time series is carried out by the \mavca{} pipeline
+		written for this dissertation and documented in
+		\cref{section:methods:software:scape}. That section supersedes the
+		generic outline below, which applies to any other modality used here.
+
 		TODO: Present the pipeline as an ordered list of transformations from
 		raw files to the numbers that enter your statistics. Name every piece
 		of software with its version, and state every parameter you did not
@@ -227,6 +233,12 @@
 			amplitude" is not a definition; "mean $\Delta F/F_0$ over
 			\SIrange{0.5}{2.0}{\second} after stimulus onset, minus the mean
 			over the \SI{1}{\second} preceding it" is.
+
+	% ------------------------------------------------------------------------
+	% The software written for this dissertation is documented in its own
+	% section. Pipeline-specific processing details live there; the generic
+	% \section{Data processing} above should stay short and point here.
+	\input{sections/software/pipeline-scape}
 
 	% ------------------------------------------------------------------------
 	\section{Statistical analysis}\label{section:methods:statistics}

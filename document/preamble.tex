@@ -73,9 +73,17 @@
 \usepackage{textcomp}
 \usepackage{caption}
 \usepackage[all]{nowidow}
-\usepackage{hyphenat}
+% [htt] lets \texttt{} hyphenate. Without it, long monospace strings such as
+% file paths and column names cannot break and run past the 1in right margin,
+% which BU guide 1.1.3 forbids.
+\usepackage[htt]{hyphenat}
 \usepackage[inline]{enumitem}
 \usepackage{soul}
+
+% Allow TeX a little extra slack on the last resort pass rather than letting a
+% line overrun the right margin by a few points. Margin compliance matters more
+% than perfectly even inter-word spacing on the occasional line.
+\setlength{\emergencystretch}{2em}
 
 \PassOptionsToPackage{hyphens}{url}
 
@@ -230,6 +238,33 @@
 \newtheorem{observation}[theorem]{Observation}
 \newtheorem{example}[theorem]{Example}
 
+% ------------------------------------------------------- drafting notes -----
+% \needsinput{...} marks a place where the text needs your judgement -- a
+% physical or biological rationale, a number you have to look up, or a claim
+% that should not be made until it is checked. It renders as a visible,
+% clearly-marked block so nothing slips into the submitted draft unnoticed.
+%
+% To hide every note (e.g. for the copy you send to grsrec@bu.edu), build with:
+%     INTERACTION=nonstopmode pdflatex "\def\finaldraft{}\input{main}"
+% or simply define \finaldraft at the top of main.tex.
+%
+% Check for leftovers before submitting:
+%     grep -rn "needsinput" document/sections
+\ifdefined\finaldraft%
+	\newcommand{\needsinput}[1]{}
+\else
+	\newcommand{\needsinput}[1]{%
+		\par\medskip\noindent
+		\begingroup
+			\small\sffamily\color{DarkRed}%
+			\begin{singlespace}%
+				\textbf{[NEEDS INPUT]}\quad #1%
+			\end{singlespace}%
+		\endgroup
+		\par\medskip
+	}
+\fi
+
 % -------------------------------------------------------------- shortcuts ---
 % Statistics shorthands, so reporting stays consistent across chapters.
 \newcommand{\pval}[1]{\ensuremath{p = #1}}
@@ -242,6 +277,11 @@
 \newcommand{\invitro}{\emph{in vitro}}
 \newcommand{\exvivo}{\emph{ex vivo}}
 \newcommand{\etal}{\emph{et al.}}
+
+% Software names. Plain macros rather than glossary entries so they are safe to
+% use inside captions and headings.
+\newcommand{\mavca}{MAVCA}
+\newcommand{\napari}{\textsc{napari}}
 
 % Full citation of your own publications, used in the Introduction.
 \newcommand{\printpublication}[1]{\AtNextCite{\defcounter{maxnames}{99}}\fullcite{#1}}
