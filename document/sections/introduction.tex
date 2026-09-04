@@ -1,130 +1,85 @@
-\chapter{Introduction}
+\chapter{Introduction}\label{chapter:introduction}
 \thispagestyle{myheadings}
 
-	As the organizations struggle with demands for storage and processing of their data, they increasingly turn to third parties for outsourcing capabilities.
-	A number of companies including Amazon (\acrshort{aws}), Microsoft (Azure) and Google (\acrshort{gcp}) offer outsourced database solutions to individuals and other businesses.
-	This model is lucrative because not only do the clients pay exactly for what they use in terms of pure computational resources, but also the cloud takes care of the entire deployment process, including availability, scalability, replication, and, most importantly, security.
-	The cloud business model provides resources on-demand --- from bare-bones \acrshortpl{vm} to database-as-a-service products.
+	% ========================================================================
+	% GENERAL INTRODUCTION
+	%
+	% In a life-science dissertation this chapter does the work that a review
+	% article would: it establishes the field, narrows to the open question,
+	% and states what you did about it. Aim for 15-30 pages.
+	%
+	% A conventional structure, which the sections below follow:
+	%   1. Broad significance -- why should anyone care?
+	%   2. Current state of knowledge -- what is established?
+	%   3. The gap -- what is missing or contradictory?
+	%   4. Rationale for the approach -- why this technique, this model?
+	%   5. Specific aims -- one paragraph per results chapter.
+	% ========================================================================
 
-	While the cloud providers typically have strict customer data privacy policies and even offer server-side encryption-at-rest services, the clients still have to trust the provider with their plaintext data.
-	Server-side encryption-at-rest by definition requires the provider to know the encryption key to manipulate the data, even if the key is ephemeral and is not stored in the cloud permanently.
-	Moreover, cloud providers in general, and customers' \acrshortpl{vm} in particular, may be vulnerable to external attacks --- from snapshot-level attacks, in which the adversary obtains a copy of the \acrshort{vm} memory, to more devastating persistent attacks, in which the adversary continuously monitors the \acrshort{vm} processes.
+	TODO: Open with a paragraph that a scientist outside your subfield could
+	follow, stating the broad problem and its clinical or biological stakes.
 
-	Protecting the private information beyond cloud provider guarantees typically requires encrypting it in a way that preserves the ability to process it.
-	A line of research targets securing outsourced database systems, but often achieves protection at the cost of efficiency too high for a solution to be viable for practical applications.
-	In this thesis, we will cover the constructions that are used to answer different types of database queries in the outsourced model while providing both provable security and practical efficiency guarantees.
+	\section{Background}\label{section:introduction:background}
 
-	\section{Model}
+		TODO: Review the established literature. Build the argument in the
+		order the reader needs it, not in the order you learned it.
 
-		In this work, we consider \emph{an outsourced database system} model, a notion first introduction in \cite{outsourced-db-intro}, adapted from \cite{generic-attacks-kellaris} and \cite{epsolute}.
+		\subsection{TODO: first background theme}
 
-		\subsection{Outsourced database model}\label{section:introduction:model:odb}
+			TODO: Cite with \verb|\parencite{key}| for a parenthetical
+			citation, \verb|\textcite{key}| when the authors are the subject
+			of your sentence, and \verb|\cite{key}| for the plain form. For
+			example: hemodynamic coupling has been characterised extensively
+			\parencite{placeholder-review}, and \textcite{placeholder-methods}
+			introduced the measurement approach used here.
 
-			Similar to \cite{epsolute}, a database is abstracted as a collection of \dataSize{} records \record{}, each with a unique identifier \recordID{}, associated with search keys \searchKey{}: \databaseDef{}.
-			All records are assumed to have an identical fixed bit-length, and the search keys are elements of some domain \searchKeyDomain{}.
-			A query is modeled as a predicate $\query \in \querySet: \searchKeyDomain \to \bin$.
-			Evaluating a query \query{} on a database \database{} results in $\query( \database ) = \{ \record_i : \query( \searchKey_i ) = 1 \}$, all records whose search keys satisfy \query{}.
+		\subsection{TODO: second background theme}
 
-			Formally, an outsourced database system consists of two protocols between a stateful user \user{}, who owns the data, and an untrusted stateful server \server{}, to whom these data are outsourced.
-			In setup protocol \protocolSetup{}, \user{} receives as input a database \databaseDef{} and \server{} may optionally output a data structure \serverDS{}.
-			In query protocol \protocolQuery{}, \user{} receives a query $\query \in \querySet$, \server{} receives \serverDS{} produced in the setup protocol, and \user{} outputs the result of the query $\query( \database )$.
-			Both parties may update their internal states.
-			We call a system \emph{correct} if it holds with overwhelming probability over the randomness of the above runs that running \protocolSetup{} and  \protocolQuery{} on the corresponding inputs yields the correct result $\{ \record_i : \query( \searchKey_i ) = 1 \}$.
+			TODO.
 
-		\subsection{Security model}
+	\section{Gap in current knowledge}\label{section:introduction:gap}
 
-			In an outsourced database system we are not aiming for perfect security, because the stronger the data protection guarantees are the harder it is to manipulate these data, the less efficient and functional the system becomes.
-			There will always be some leakage, and our goal is to quantify, analyze and reduce it, while retaining the system's performance and usability.
-			In terms of security models, we define two types of adversaries --- a \emph{snapshot} and a \emph{persistent} adversary.
+		TODO: State plainly what is not known. This paragraph is the hinge of
+		the whole dissertation -- everything before it motivates the gap, and
+		everything after it addresses the gap.
 
-			As the name suggests, a snapshot adversary can see a ``snapshot'' of the server's data at multiple points in time.
-			One can think of such an attack as if someone steals a hard drive or accesses a backup.
-			Formally, \adversary{} knows \server{} state at all stages of the protocol.
+	\section{Rationale and approach}\label{section:introduction:rationale}
 
-			A persistent adversary is stronger in that she monitors the server continuously.
-			Therefore, she can see the same information as the snapshot adversary plus the network traffic and the access pattern.
-			Such adversary can be thought of as a malicious software (virus) that runs as a background process with broad permissions.
-			Formally, on top of the \server{} state, \adversary{} knows the size and content of \server{} communication and the sequence of accesses \server{} makes to its internal state at all protocol stages.
+		TODO: Justify your model system, your measurement modality and your
+		manipulation. Explain what each one can and cannot resolve. Anticipate
+		the obvious "why didn't you just do X instead" question here rather
+		than in the discussion.
 
-			Intuitively, one can think that encrypting records should protect the data.
-			Depending on how the records are encrypted (i.e., whether the symmetric or property-preserving encryption is used), this approach can mitigate the snapshot adversary.
-			Persistent adversary, however, can observe the communication size even if the traffic itself is encrypted, and can see the access pattern even if the records are protected.
-			It has been shown that the knowledge of access pattern \cite{multidimensional-range-queries, inference-attack-islam-14, leakage-abuse-attacks-cash-15, inference-attacks-naveed-15, generic-attacks-kellaris, attacks-tao-of-inference, grubbs-attacks, access-pattern-disclosure, attacks-improved-reconstruction} or communication volume \cite{generic-attacks-kellaris, state-of-uniform, attacks-improved-reconstruction, pump-volume-attacks, volume-range-attacks} alone can enable a series of reconstruction attacks.
+	\section{Specific aims}\label{section:introduction:aims}
 
-			Note that both adversaries are \emph{honest-but-curios} --- they only observe and never interfere.
-			Denial-of-service attacks and integrity protection are out of scope of this work.
+		\begin{description}[style=unboxed, leftmargin=0em]
 
-		\subsection{Query types}\label{section:intro:model:query-types}
+			\item[Aim 1.]
+				TODO: One or two sentences. Addressed in
+				\cref{chapter:study-one}.
 
-			The type of query \query{} is deliberately left abstract.
-			The outsourced database system assumes that a query contains a way (a predicate) to select only the records whose search keys satisfy it.
-			In this work, we consider the following types of queries.
+			\item[Aim 2.]
+				TODO: One or two sentences. Addressed in
+				\cref{chapter:study-two}.
 
-			\paragraph*{A point query.}
-				This query selects records whose key is equal to a given value.
-				The domain of the point value does not have to be ordered; it can be categorical, like color names.
-				The relevant \acrshort{sql} query can be
+		\end{description}
 
-				\begin{center}
-					\texttt{SELECT * FROM t1 WHERE color = 'blue'}. % chktex 32
-				\end{center}
+	\section{Organization of this dissertation}\label{section:introduction:structure}
 
-			\paragraph*{A range query.}
-				This query selects records whose keys lie between two values from an ordered domain.
-				The relevant \acrshort{sql} query can be
+		\Cref{chapter:methods} describes the animals, surgical preparations,
+		optical instrumentation, experimental designs and analysis pipelines
+		shared by all of the studies that follow.
+		\Cref{chapter:study-one} reports TODO.
+		\Cref{chapter:study-two} reports TODO.
+		\Cref{chapter:discussion} integrates the findings, states the
+		limitations and outlines future directions.
 
-				\begin{center}
-					\texttt{SELECT * FROM t1 WHERE age BETWEEN 18 and 65}.
-				\end{center}
+	\subsection*{Work completed during the doctoral program}
 
-			\paragraph*{A \acrshort{knn} query.}
-				\acrlong{knn} query selects $k$ records whose keys are ``closest'' to a given value.
-				This query type requires a definition of distance metric over the domain of search keys, for example, simple Euclidean distance.
-				The relevant \acrshort{sql} query can be
-
-				\begin{center}
-					\texttt{SELECT * FROM t1 ORDER BY location <-> '(29.9691,-95.6972)' LIMIT 5}. % chktex 36
-				\end{center}
-
-	\section{Thesis structure}
-
-		In \cref{section:background}, we will cover the building blocks that are used in the outsourced database systems.
-		These blocks include symmetric encryption, \acrshort{oram} and \acrlong{dp}.
-		\cref{section:related-work} includes the overview of approaches that provide the privacy and/or security in the outsourced setting.
-		The chapter also includes the overview of the attacks against the mechanisms.
-		\cref{section:range-snapshot} analyses in detail the range query mechanisms in the snapshot adversary model.
-		The chapter offers a comparative evaluation of five \acrlong{ore} schemes and five secure range query protocols \cite{ore-benchmark-17}.
-		\cref{section:range-persistent} proposes a novel solution for the range queries in the persistent adversary model, \epsolute{} \cite{ore-benchmark-17}.
-		In \cref{section:knn-snapshot}, we describe \kanon{} \cite{k-anon} --- a mechanism to answer similarity search (i.e., \acrlong{knn}) queries in a snapshot adversary setting using a type of property-preserving encryption similar to \acrshort{ope}.
-		In the chapter we describe the encryption method, the set of experiments to empirically measure the search accuracy and the level of protection against the attacks.
-		The source code of this thesis is publicly available.\footnote{
-			The thesis has been compiled
-			\ifthenelse%
-				{\equal{\version}{local-dev}}
-				{locally}
-				{from \href{https://github.com/dbogatov/doctoral-thesis/commit/\version}{\texttt{dbogatov/doctoral-thesis@\version}}}
-			on \today{}.
-		}
-
-		\subsection{Works completed during the Ph.D. program}
-
-			\newlength{\citationLength}
-			\settowidth{\citationLength}{\cite{k-anon}}
-			\setlength{\citationLength}{\dimexpr\citationLength+0.9em\relax}
-			\begin{description}[
-				leftmargin=\dimexpr\citationLength+0.7em\relax,
-				labelindent=0pt,
-				labelwidth=\citationLength%
-			]
-				\item[\cite{ore-benchmark-17}] \printpublication{ore-benchmark-17}
-				\item[\cite{epsolute}] \printpublication{epsolute}
-				\item[\cite{k-anon}] \printpublication{k-anon}
-				\item[\cite{bogatov-idemix-2020}] \printpublication{bogatov-idemix-2020}
-				\item[\cite{dispot}] \printpublication{dispot}
-			\end{description}
-
-			The works \cite{ore-benchmark-17,epsolute,k-anon} are discussed in \cref{section:range-snapshot,section:range-persistent,section:knn-snapshot} respectively.
-			The other two works \cite{bogatov-idemix-2020,dispot} fall outside of scope of this thesis.
-			\cite{bogatov-idemix-2020} proposes an imporved anonymous delegatable credential scheme and its novel extensions, auditability and revocation, along with the instantiation and comprehensible set of experiments, see the abstract in \cref{section:appendix:idemix-abstract}.
-			\cite{dispot} is from the domain of Bioinformatics, it offers a knowledge-based statistical potential that estimates the propensity of an interaction between a pair of protein domains, see the abstract in \cref{section:appendix:dispot-abstract}.
-			I also want to note the works I have completed on the route to my doctorate program \cite{bogatov-ipe-journal-2017,bogatov-wpi-library-2016,nurbekov-wpi-library-2015}.
+		% If a chapter has been published, you MUST say so on the copyright
+		% page as well (BU guide 1.3.2), e.g.:
+		%   (c)2027 by Daria Bogatova. All rights reserved except for
+		%   chapter 3, which is (c)2026 Journal Name.
+		% List your publications here with \printpublication{citekey}.
+		TODO: List the papers, preprints and conference abstracts that came
+		out of this work, and note which chapters they correspond to.

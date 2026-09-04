@@ -1,35 +1,62 @@
-% cSpell:ignore pdftitle pdfsubject pdfkeywords pdfcreator pdfproducer dvips Epsolute
+% cSpell:ignore pdftitle pdfsubject pdfkeywords pdfcreator pdfproducer
 
-\title{Secure and Efficient Query Processing in Outsourced Databases}
-\author{Dmytro Bogatov}
+% ============================================================================
+% TODO: Confirm the exact wording of your title with your committee.
+% Taken from your CV, where it appears as both your dissertation title and a
+% manuscript in preparation.
+% BU guide 1.2.1: keep it brief and descriptive. Acronyms are discouraged.
+% ProQuest cannot reproduce formulae, superscripts, subscripts or symbols.
+% BU guide 1.2.3: do not name the discipline in the title.
+% ============================================================================
+\title{Behavioral-State-Dependent Calcium Dynamics in the Apical Dendrites of L5 Pyramidal Cells}
+\author{Daria Bogatova}
 
+% 1 = Master's thesis, 2 = Doctoral dissertation, 3 = both
 \degree=2
 
+% Previous degrees, one per line, oldest first.
 \prevdegrees{
-	B.S., Worcester Polytechnic Institute, 2017 \\
-	M.S., Boston University, 2019
+	B.S., Goethe University Frankfurt, 2021 \\
+	M.S., Boston University, 2024
 }
 
+% ----------------------------------------------------------------------------
+% Official school name for the title page. BU guide p.27 lists the only
+% permitted forms. Use "Graduate School of Arts and Sciences" for a GRS
+% program (e.g. the Neuroscience PhD). If you are registered in Biomedical
+% Engineering, this MUST read "College of Engineering" instead.
+% ----------------------------------------------------------------------------
 \department{Graduate School of Arts and Sciences}
 
-\defenseyear{2022}
-\degreeyear{2022}
+% Year the degree is officially conferred -- not the year you defend.
+\defenseyear{2027}
+\degreeyear{2027}
 
-\readerC{First}{George Kollios, Ph.D.}{Professor of Computer Science}{}{{\Fontskrivan\slshape\setul{0.1ex}{}\ul{~~Approved~~}}} % chktex 6
-\readerC{Second}{Leonid Reyzin, Ph.D.}{Professor of Computer Science}{}{{\calligra\setul{0.1ex}{}\ul{~~Approved~~}}}
-\readerC{Third}{Manos Athanassoulis, Ph.D.}{Assistant Professor of Computer Science}{}{{\cursive\setul{0.1ex}{}\ul{~~Approved~~}}}
-\readerC{Fourth}{Adam O'Neil, Ph.D.}{Assistant Professor of Computer Science}{University of Massachusetts --- Amherst}{{\wedn\setul{0.1ex}{}\ul{~~Approved~~}}}
+% ============================================================================
+% READERS
+% \readerC{ordinal}{name}{official title}{institution or empty} -- four args.
+% BU guide 1.4.3: put the official title after the name ("Professor of
+% Neuroscience"). Never write "Dr." before a name.
+% The signature line is always rendered blank: the copy you submit must be
+% UNSIGNED, and signatures are collected separately through DocuSign.
+% ============================================================================
+% Leave the institution (4th argument) empty for BU faculty. BU guide 1.4.3:
+% a reader is assumed to be BU faculty unless you name another institution.
+% Verify each official title before the DocuSign page goes out.
+\readerC{First}{Anna Devor, Ph.D.}{Professor of Biomedical Engineering}{}
+\readerC{Second}{Ian Davison, Ph.D.}{Professor of Biology}{}
+\readerC{Third}{Michael Hasselmo, Ph.D.}{Professor of Biomedical Engineering}{}
+\readerC{Fourth}{Lynne Chantranupong, Ph.D.}{Assistant Professor of Biology}{}
 
+% Major professor shown on the abstract page. Should match the first reader.
 \numadvisors=1
-\majorprof{George Kollios, Ph.D.}{Professor of Computer Science}
-
-% \buecethesistitleboxpage%
+\majorprof{Anna Devor, Ph.D.}{Professor of Biomedical Engineering}
 
 \hypersetup{
-	pdfauthor   = {Dmytro Bogatov <dmytro@bu.edu>},
-	pdftitle    = {Secure and Efficient Query Processing in Outsourced Databases},
+	pdfauthor   = {Daria Bogatova},
+	pdftitle    = {Behavioral-State-Dependent Calcium Dynamics in the Apical Dendrites of L5 Pyramidal Cells},
 	pdfsubject  = {Doctoral Dissertation},
-	pdfkeywords = {OPE, ORE, Range Query Protocols, Epsolute, kNN},
+	pdfkeywords = {apical dendrites, layer 5 pyramidal neurons, calcium imaging, neuromodulation, two-photon microscopy, SCAPE},
 	pdfcreator  = {LaTeX with hyperref package},
-	pdfproducer = {dvips + ps2pdf}
+	pdfproducer = {pdflatex}
 }

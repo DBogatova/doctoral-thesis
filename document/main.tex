@@ -10,127 +10,163 @@
 
 \begin{document}
 
+	% ========================================================================
+	% PRELIMINARY PAGES
+	%
+	% BU guide 1.1.6 fixes this order and this pagination:
+	%   Title page              i    (counted, number not printed)
+	%   Copyright page          ii   (counted, number not printed)
+	%   Readers' approval page  iii  (counted, number not printed, UNSIGNED)
+	%   Dedication (optional)   iv
+	%   Acknowledgments (opt.)  v
+	%   Abstract (required)     vi
+	%   Preface (optional)      vii
+	%   Table of Contents       viii
+	%   List of Tables          (required if you have any tables)
+	%   List of Figures         (required if you have any figures)
+	%   List of Illustrations   (required if you have any)
+	%   List of Abbreviations   (alphabetical)
+	%   Glossary                (if applicable)
+	%   First page of text      1
+	%
+	% Pagination is continuous: if you omit an optional section, do not skip
+	% its number, just carry on.
+	% ========================================================================
+
 	\input{meta}
 
-	\ifthenelse{1=1}{
-		\maketitle
-	}{
-		Not particularly proud, but it seems necessary.
-		I use pandoc to convert Tex to text and then run some plain text analysis.
-		For some reason pandoc fails for the \\maketitle statement.
-		However, it is not smart enough to deduce that this condition is always true, while Tex is.
-	}
+	\maketitle%
 	\cleardoublepage%
 
 	\copyrightpage%
 	\cleardoublepage%
 
 	\approvalpage%
-
 	\cleardoublepage%
 
-	\IfFileExists%
-		{frontmatter/quote.tex}
-		{
-			\ifx\noAcks\undefined%
-				\newpage
-				\input{frontmatter/quote}
-				\cleardoublepage%
-			\fi
-		}
-		{}
+	% Dedication
+	%\IfFileExists%
+	%	{frontmatter/dedication.tex}
+	%	{
+	%		\ifx\noAcks\undefined%
+	%			\newpage
+	%			\phantomsection%
+	%			\addcontentsline{toc}{chapter}{Dedication}
+	%			\input{frontmatter/dedication}
+	%			\cleardoublepage%
+	%		\fi
+	%	}
+	%	{}
 
-	\IfFileExists%
-		{frontmatter/dedication.tex}
-		{
-			\ifx\noAcks\undefined%
-				\newpage
-				\input{frontmatter/dedication}
-				\cleardoublepage%
-			\fi
-		}
-		{}
+	% Acknowledgments
+	%\IfFileExists%
+	%	{frontmatter/acknowledgments.tex}
+	%	{
+	%		\ifx\noAcks\undefined%
+	%			\newpage
+	%			\phantomsection%
+	%			\addcontentsline{toc}{chapter}{Acknowledgments}
+	%			\input{frontmatter/acknowledgments}
+	%			\cleardoublepage%
+	%		\fi
+	%	}
+	%	{}
 
-	\IfFileExists%
-		{frontmatter/acknowledgments.tex}
-		{
-			\ifx\noAcks\undefined%
-				\newpage
-				\input{frontmatter/acknowledgments}
-				\cleardoublepage%
-			\fi
-		}
-		{}
-
+	% Abstract -- required. \abstractpage prints the title / author / school /
+	% major professor header that BU requires above the word ABSTRACT.
+	\phantomsection%
+	\addcontentsline{toc}{chapter}{Abstract}
 	\begin{abstractpage}
 		\input{frontmatter/abstract}
 	\end{abstractpage}
 	\cleardoublepage%
 
-	\setcounter{tocdepth}{4}
+	% ------------------------------------------------------------------------
+	% Table of Contents.
+	% tocdepth 2 lists chapters, sections and subsections. Raise to 3 or 4 if
+	% your committee wants deeper subheadings (BU guide 1.6 allows either).
+	% ------------------------------------------------------------------------
+	\setcounter{tocdepth}{2}
 	\phantomsection%
-	\addcontentsline{toc}{chapter}{Contents}
+	\addcontentsline{toc}{chapter}{Table of Contents}
 	\tableofcontents
 	\cleardoublepage%
 
+	% ------------------------------------------------------------------------
+	% Lists, in the order required by BU guide 1.1.6:
+	% Tables, then Figures, then Illustrations, then Abbreviations.
+	% Each list is REQUIRED if the document contains any of that element, and
+	% must be DELETED if it does not. Comment out whichever you do not need.
+	% ------------------------------------------------------------------------
 	\newpage
-	\listofalgorithms%
-	\addcontentsline{toc}{chapter}{\listalgorithmname}
-	\cleardoublepage%
-
-	\newpage
-	\listoftables
+	\phantomsection%
 	\addcontentsline{toc}{chapter}{\listtablename}
+	\listoftables
 	\cleardoublepage%
 
 	\newpage
-	\listoffigures
+	\phantomsection%
 	\addcontentsline{toc}{chapter}{\listfigurename}
-	% \cleardoublepage%
-
-	\addtocontents{toc}{\protect\contentsline{chapter}{\protect{}List of Acronyms}{xx}{link}}
-	\printglossaries%
+	\listoffigures
 	\cleardoublepage%
 
+	% List of Abbreviations -- sorted alphabetically by the glossaries package.
+	% Only abbreviations actually used in the text appear here; see glossary.tex
+	% if you want to force every defined entry into the list.
+	\phantomsection%
+	\addcontentsline{toc}{chapter}{List of Abbreviations}
+	\printglossary[type=\acronymtype, title={List of Abbreviations}]
+	\cleardoublepage%
+
+	% ========================================================================
+	% MAIN TEXT -- Arabic numerals restart at 1 here.
+	% ========================================================================
 	\newpage
 	\endofprelim%
 	\cleardoublepage%
 
 	\input{sections/introduction}
 	\cleardoublepage%
-	\input{sections/background}
-	\cleardoublepage%
-	\input{sections/related-work}
-	\cleardoublepage%
-	\input{sections/snapshot-range-queries/snapshot-range-queries}
-	\cleardoublepage%
-	\input{sections/persistent-range-queries/persistent-range-queries}
-	\cleardoublepage%
-	\input{sections/snapshot-knn-queries}
-	\cleardoublepage%
-	\input{sections/conclusion}
+
+	\input{sections/methods}
 	\cleardoublepage%
 
+	\input{sections/study-one}
+	\cleardoublepage%
+
+	\input{sections/study-two}
+	\cleardoublepage%
+
+	\input{sections/discussion}
+	\cleardoublepage%
+
+	% ========================================================================
+	% END MATTER
+	% BU guide 1.1.6 and 1.7: appendices FIRST, then the bibliography, then the
+	% vita last. Pagination continues in Arabic numerals throughout -- do not
+	% restart or use A-1, A-2 style numbers in the appendices.
+	% ========================================================================
 	\begin{appendices}
 
-		\input{endmatter/appendix-idemix-abstract}
-		\cleardoublepage%
-
-		\input{endmatter/appendix-dispot-abstract}
+		\input{endmatter/appendix-supplementary}
 		\cleardoublepage%
 
 	\end{appendices}
 
+	% Bibliography. Single spacing with a blank line between entries is
+	% explicitly allowed by BU guide 1.8.1.
 	\newpage
 	\singlespace%
 
 	\phantomsection%
 	\addcontentsline{toc}{chapter}{Bibliography}
 
-	\printbibliography%
+	\printbibliography[heading=buchapter]
 
 	\cleardoublepage%
 
+	% Curriculum Vitae -- required of ALL students, and must be the last
+	% numbered page(s). Keep it to three or four pages (BU guide 1.9).
 	\input{endmatter/cv}
 
 \end{document}

@@ -1,68 +1,92 @@
 % cSpell:disable
 
+% ============================================================================
+% BU thesis class -- do not touch. This file carries the margins, spacing,
+% title/copyright/approval/abstract page layouts and page numbering that BU
+% Mugar Library requires. It has already passed a BU format review.
+% ============================================================================
 \usepackage{style/buthesis}
-\usepackage[T2A]{fontenc}
+
+\usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 
-% For page frame
+% Loaded explicitly: buthesis.sty only pulls in setspace, and these two used
+% to arrive indirectly through the cryptography packages that were removed.
+\usepackage{etoolbox}
+\usepackage{ifthen}
+
+% Uncomment to draw a frame showing the text block while checking margins:
 % \usepackage[showframe]{geometry}
 
-\usepackage{savesym}
+% ---------------------------------------------------------------- graphics --
 \usepackage[usenames,dvipsnames]{xcolor}
-\usepackage[
-	lambda,
-	advantage,
-	operators,
-	sets,
-	landau,
-	probability,
-	notions,
-	logic,
-	ff,
-	mm,
-	primitives,
-	events,
-	complexity,
-	asymptotics,
-	keys
-]{cryptocode}
-\usepackage{appendix}
-\usepackage{adjustbox}
-\usepackage[ruled]{algorithm}
-\usepackage{algorithmicx}
-\usepackage[noend]{algpseudocode}
-\usepackage{amsmath}
-\usepackage{amsfonts}
-\usepackage{subcaption}
 \usepackage{graphicx}
-\usepackage{balance}
-\usepackage{diagbox}
-\usepackage{mathtools}
-\usepackage{nicefrac}
+\usepackage{subcaption}
+\usepackage{adjustbox}
+\usepackage{rotating}
+\usepackage[final]{pdfpages}
+
+% ------------------------------------------------------------------ tables --
 \usepackage{booktabs}
 \usepackage{multirow}
+\usepackage{longtable}
+\usepackage{makecell}
+\usepackage{threeparttable}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{diagbox}
+
+% ------------------------------------------------------------------- maths --
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{nicefrac}
 \usepackage{bm}
-\usepackage{interval}
-\usepackage{rotating}
-\usepackage{fancybox}
-\usepackage{frcursive}
-\usepackage{inslrmin}
-\usepackage{calligra}
-\usepackage{wedn}
-\usepackage{pbsi}
-\usepackage{aurical}
-\usepackage{inslrmin}
-\usepackage{calligra}
-\savesymbol{st} % \st has been already defined, likely in cryptocode
+\usepackage[mathscr]{eucal}
+
+% units and numbers -- indispensable for a methods chapter
+\usepackage{siunitx}
+\sisetup{
+	group-minimum-digits = 4,
+	per-mode             = symbol,
+	range-units          = single,
+	separate-uncertainty = true,
+	detect-weight        = true
+}
+% Convenience units used throughout the methods chapter.
+% siunitx does not define time units longer than a day, nor these shorthands.
+\DeclareSIUnit{\molar}{M}
+\DeclareSIUnit{\Molar}{\textsc{m}}
+\DeclareSIUnit{\pixel}{px}
+\DeclareSIUnit{\frame}{frame}
+\DeclareSIUnit{\week}{week}
+\DeclareSIUnit{\month}{month}
+\DeclareSIUnit{\year}{year}
+\DeclareSIUnit{\cell}{cell}
+\DeclareSIUnit{\trial}{trial}
+
+% ----------------------------------------------------------------- layout ---
+\usepackage{appendix}
+\usepackage{calc}
+\usepackage{textcomp}
+\usepackage{caption}
+\usepackage[all]{nowidow}
+\usepackage{hyphenat}
+\usepackage[inline]{enumitem}
 \usepackage{soul}
-\restoresymbol{TXF}{st}
+
 \PassOptionsToPackage{hyphens}{url}
+
+% ------------------------------------------------------------------ colors --
 \definecolor{BrightRed}{RGB}{204, 0, 0}
 \definecolor{DarkRed}{RGB}{102, 0, 0}
 \definecolor{DarkerRed}{RGB}{78, 0, 0}
 \definecolor{MidRed}{RGB}{143, 0, 0}
+\definecolor{lightGrey}{RGB}{220,220,220}
 
+% Matplotlib default cycle, handy for keeping figures and text consistent.
 \definecolor{MatplotlibOne}{HTML}{1F77B4}
 \definecolor{MatplotlibTwo}{HTML}{FF7F0E}
 \definecolor{MatplotlibThree}{HTML}{2CA02C}
@@ -74,124 +98,93 @@
 \definecolor{MatplotlibNine}{HTML}{BCBD22}
 \definecolor{MatplotlibTen}{HTML}{17BECF}
 
+% --------------------------------------------------------------- crossrefs --
+% NOTE: for the copy you submit to ProQuest you may prefer black links.
+% Set colorlinks=false, or linkcolor/citecolor/urlcolor to black.
 \usepackage[
 	colorlinks = true,
-	linkcolor = DarkRed,
-	urlcolor = MidRed,
-	citecolor = BrightRed,
+	linkcolor  = DarkRed,
+	urlcolor   = MidRed,
+	citecolor  = BrightRed,
 ]{hyperref}
-\usepackage[noabbrev,capitalise]{cleveref} % must be loaded after hyperref
+\usepackage[noabbrev,capitalise]{cleveref} % must load after hyperref
 
 \AtBeginEnvironment{appendices}{\crefalias{chapter}{appendix}}
 
-\usepackage{color}
-\usepackage{colortbl}
-\usepackage{amsthm}
-\usepackage{caption}
-\usepackage[all]{nowidow}
-\usepackage{hyphenat}
-\usepackage[inline]{enumitem}
-\usepackage{siunitx}
-\usepackage[mathscr]{eucal}
-\usepackage{longtable}
-\usepackage{makecell}
-\usepackage{threeparttable}
-\usepackage{textcomp}
-\usepackage{array}
-\usepackage{calc}
-\usepackage[final]{pdfpages}
-\usepackage{pax}
+% ------------------------------------------------------------ bibliography --
+% csquotes is required by biblatex for correct quotation handling.
+\usepackage{csquotes}
 
-\hyphenation{
-	Shrink-wrap
-	Shma-ti-kov
-	SIG-SAC
-	SIG-MOD
-	Da-ta-ba-ses
-	RAN-DOM
-	RDB-MS
-	Sprin-ger
-	Na-ve-ed
-	Tho-mas
-	VL-DBJ
-	Arch-ive
-	En-cryp-ted
-	Sche-me
-	Mi-ro-nov
-	Addi-son
-	Mi-cha-el
-	Kyun-ghy-un
-	Sha-ron
-	Ne-ill
-	Se-arch-able
-	Uri-ah
-	So-ur-ces
-	Ka-sik-ci
-	Ar-chi-ve
-	Mo-dels
-	Spra-be-ry
-	Ra-ma-chand-ran
-	BERT-olo-gy
-	Ya-rom
-	Pros-pects
-}
-
-\sisetup{
-	group-minimum-digits = 4,
-	per-mode = symbol
-}
-
+% BU guide 1.8.1: arrange alphabetically by the surname of the primary author,
+% OR number citations in order of appearance. Do not mix the two.
+% Life-science convention is author-year, which is what is configured here.
+% To switch to numeric (Nature / Cell style), use:
+%     style=numeric-comp, sorting=none
 \usepackage[
-	backend=biber,
-	style=alphabetic,
-	giveninits=false,
-	sorting=nyt,
-	maxbibnames=1000,
-	maxalphanames=4
+	backend      = biber,
+	style        = authoryear,
+	sorting      = nyt,
+	maxcitenames = 2,
+	maxbibnames  = 99,
+	giveninits   = true,
+	uniquename   = init,
+	dashed       = false,
+	natbib       = true
 ]{biblatex}
 
 \bibliography{bibfile}
 
-\renewcommand*{\mkbibnamegiven}[1]{%
-	\ifitemannotation{highlight}
-	{\textbf{#1}}
-	{#1}
+% \printbibliography issues a \chapter*, which report.cls follows with
+% \thispagestyle{plain} -- that would drop the page number to the bottom of the
+% first bibliography page while every other page of the main text numbers at the
+% top. BU guide 1.1.5 says to pick ONE placement for the Arabic pages, so force
+% the running style back. This mirrors the \thispagestyle{myheadings} that each
+% chapter file carries after its \chapter command.
+\defbibheading{buchapter}[Bibliography]{%
+	\chapter*{#1}%
+	\thispagestyle{myheadings}%
 }
 
+% Highlight your own name in the bibliography with
+%   author = {Bogatova, Daria+{highlight}} ... see biblatex annotations
+\renewcommand*{\mkbibnamegiven}[1]{%
+	\ifitemannotation{highlight}{\textbf{#1}}{#1}
+}
 \renewcommand*{\mkbibnamefamily}[1]{%
-	\ifitemannotation{highlight}
-	{\textbf{#1}}
-	{#1}
+	\ifitemannotation{highlight}{\textbf{#1}}{#1}
 }
 
 \graphicspath{{./graphics/}}
 
 \ifdefined\draft%
-	% https://www.overleaf.com/learn/latex/Inserting_Images#Generating_high-res_and_low-res_images
 	\usepackage{epstopdf}
 	\epstopdfDeclareGraphicsRule{.pdf}{png}{.png}{convert #1 \OutputFile}
 	\DeclareGraphicsExtensions{.png,.pdf}
 \fi
 
+% --------------------------------------------------------- abbreviations ----
+% BU guide 1.1.7: the List of Abbreviations must be alphabetical, NOT in order
+% of appearance. The glossaries package sorts alphabetically for us.
 \usepackage[
 	acronym,
 	nonumberlist,
 	nopostdot,
 	nogroupskip
 ]{glossaries}
-\renewcommand*{\glsclearpage}{}
-\renewcommand*{\acronymname}{List of Acronyms}
+% Let the abbreviations list start its own page, so no blank numbered page is
+% produced. BU guide 1.1.4 forbids blank enumerated pages.
+\renewcommand*{\acronymname}{List of Abbreviations}
 
 \newglossarystyle{gloTable}
 {%
 	\newlength\aglslong%
-	\settowidth\aglslong{\widthof{\textbf{EMP-toolkit}}}
+	\settowidth\aglslong{\widthof{\textbf{BOLD-LONGEST}}}
 
 	\newlength\aglsleft%
 	\setlength{\aglsleft}{\dimexpr\aglslong+0.1em\relax}
 
 	\newlength\aglsright%
-	\setlength{\aglsright}{\widthof{Bidirectional Encoder Representation from Transformer}}
+	\setlength{\aglsright}{\widthof{blood oxygenation level dependent contrast}}
 
 	\newlength\aglscenter%
 	\setlength{\aglscenter}{\dimexpr\linewidth-\aglsright-\aglsleft\relax}
@@ -209,15 +202,11 @@
 			\end{longtable}
 		\end{center}
 	}%
-	% no group headings:
 	\renewcommand*{\glsgroupheading}[1]{}%
-	% main (level 0) entries displayed in a row
 	\renewcommand{\glossentry}[2]{%
 		\glsentryitem{##1}\glstarget{##1}{\textbf{\glossentryname{##1}}} & \dotfill & \glossentrydesc{##1} \tabularnewline%
 	}%
-	% sub-entries (same as main)
 	\renewcommand{\subglossentry}[3]{\glossentry{##2}{##3}}%
-	% blank row between groups if nogroupskip=false
 	\ifglsnogroupskip%
 		\renewcommand*{\glsgroupskip}{}%
 	\else
@@ -226,172 +215,51 @@
 }
 \setglossarystyle{gloTable}
 
-\renewcommand*{\glsclearpage}{}
 \makeglossaries%
-\glsaddall%
 
 \renewcommand*{\glstextformat}[1]{\textcolor{DarkerRed}{#1}}
 
-\newcommand{\crypte}{Crypt\ensuremath{\epsilon}}
-\newcommand{\epsolute}{\ensuremath{\mathcal{E}}p\-so\-lu\-te}
-\newcommand{\kanon}{\ensuremath{k\text{-a}n\text{o}n}}
-
-\newcommand{\record}{\ensuremath{r}}
-\newcommand{\recordID}{\ensuremath{\record^\mathsf{ID}}}
-\newcommand{\recordIDPrime}{\ensuremath{{}^\mathsf{ID}\record^\prime}}
-\newcommand{\querySet}{\ensuremath{\mathcal{Q}}}
-\newcommand{\queryKey}{\ensuremath{K}}
-
-\newcommand{\domainSize}{\ensuremath{N}}
-\newcommand{\dataSize}{\ensuremath{n}}
-\newcommand{\oramsNumber}{\ensuremath{m}}
-
-\newcommand{\user}{\ensuremath{\mathscr{U}}}
-\newcommand{\client}{\ensuremath{\mathscr{C}}}
-\newcommand{\server}{\ensuremath{\mathscr{S}}}
-
-\newcommand{\protocol}{\ensuremath{\Pi}}
-\newcommand{\protocolSetup}{\ensuremath{\protocol_{\mathsf{setup}}}}
-\newcommand{\protocolQuery}{\ensuremath{\protocol_{\mathsf{query}}}}
-\newcommand{\protocolNoGamma}{\ensuremath{\protocol_{\mathsf{no-}\gamma}}}
-\newcommand{\protocolGamma}{\ensuremath{\protocol_\gamma}}
-
-\newcommand{\searchKey}{\textsf{SK}}
-\newcommand{\searchKeyDomain}{\ensuremath{\mathcal{X}}}
-
-\newcommand{\serverDS}{\ensuremath{\mathcal{DS}}}
-\newcommand{\indexI}{\ensuremath{\mathcal{I}}}
-\newcommand{\database}{\ensuremath{\mathcal{D}}}
-\newcommand{\databaseDef}{\ensuremath{\database = \allowbreak \{(\record_1, \allowbreak \recordID_1, \allowbreak \searchKey_1), \allowbreak \ldots, \allowbreak (\record_\dataSize, \allowbreak \recordID_\dataSize, \allowbreak \searchKey_\dataSize)\}}}
-\newcommand{\fanout}{\ensuremath{k}}
-
-\newcommand{\oram}{\ensuremath{\textsc{ORAM}}}
-\newcommand{\oramProgram}{\ensuremath{\mathbf{y}}}
-\newcommand{\oramRead}{\ensuremath{\mathbf{r}}}
-\newcommand{\oramWrite}{\ensuremath{\mathbf{w}}}
-
-\newcommand{\efficiencyCoefficient}{\ensuremath{a_1}}
-\newcommand{\efficiencyOffset}{\ensuremath{a_2}}
-
-\DeclareDocumentCommand{\algo}{ m g }{%
-	{%
-		\textsc{#1}%
-		\IfNoValueF{#2}{\ensuremath{\left( #2 \right)}}%
-	}%
-}
-
-\DeclareDocumentCommand{\query}{ g g }{%
-	{%
-		\IfValueTF{#2}%
-			{\ensuremath{q_{\interval{#1}{#2}}}}%
-			{
-				\IfValueTF{#1}%
-					{\ensuremath{q_{#1}}}%
-					{\ensuremath{q}}
-			}%
-	}%
-}
-
-\newcommand{\adversary}{\ensuremath{\mathcal{A}}}
-\newcommand{\leakage}[1]{\ensuremath{\mathcal{L}_{\textsf{#1}}}}
-\renewcommand{\simulator}{\textsc{Sim}}
-\DeclareDocumentCommand{\view}{ g g }{%
-	{%
-		\IfValueTF{#2}%
-			{\ensuremath{\algo{View}_{#1} \left( #2 \right)}}%
-			{
-				\IfValueTF{#1}%
-					{\ensuremath{\algo{View}_{#1}}}%
-					{\ensuremath{\algo{View}}}
-			}%
-	}%
-}
-
-\providecommand{\bigTheta}[1]{\ensuremath{\Theta \left( #1 \right)}}
-
-\newcommand{\fromNtoM}[3]{\ensuremath{#1_#2, \allowbreak \ldots, \allowbreak #1_#3}}
-\newcommand{\probability}[1]{\ensuremath{\textnormal{Pr}\left[ #1 \right]}} % chktex 35
-\newcommand{\efficiency}[2]{\ensuremath{\left( \bigO{ #1 }, \ifthenelse{\equal{#2}{0}}{#2}{\bigO{ #2 }} \right)}}
-\newcommand{\semitransp}[2][35]{\color{fg!#1}#2}
-
-\newcommand{\BPlus}{B\raisebox{.35\height}{\scalebox{.8}{+}}}
-
+% ------------------------------------------------------------- theorems -----
+% Rarely needed in a life-science thesis, but harmless to keep available.
 \newtheorem{definition}{Definition}[section]
 \newtheorem{remark}{Remark}[section]
-
 \newtheorem{theorem}{Theorem}[section]
-\newtheorem{claim}[theorem]{Claim}
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{proposition}[theorem]{Proposition}
 \newtheorem{corollary}[theorem]{Corollary}
 \newtheorem{observation}[theorem]{Observation}
-\newtheorem{fact}[theorem]{Fact}
 \newtheorem{example}[theorem]{Example}
 
-% Add bidirectional arrow to cryptocode
-\makeatletter
-	\newcommandx*{\sendmessageboth}[2][1=<->]{%
-		\sendmessage{#1}{#2}%
-	}
-	\WithSuffix\newcommand\sendmessageboth*[2][\pcdefaultmessagelength]{%
-		\begingroup%
-			\renewcommand{\@pcsendmessagetop}{\let\halign\@pc@halign$\begin{aligned}#2\end{aligned}$}% chktex 21
-			\sendmessage{<->}{length=#1}%
-		\endgroup%
-	}
-	\renewcommand{\pccomment}[1]{{\rhd\;\text{\scriptsize#1}}} % chktex 21
-\makeatother
+% -------------------------------------------------------------- shortcuts ---
+% Statistics shorthands, so reporting stays consistent across chapters.
+\newcommand{\pval}[1]{\ensuremath{p = #1}}
+\newcommand{\pless}[1]{\ensuremath{p < #1}}
+\newcommand{\mean}[2]{\ensuremath{#1 \pm #2}}
+\newcommand{\nanimals}[1]{\ensuremath{n = #1}}
 
-\newcommand{\pcinput}[1]{\textbf{Input:}\ #1}
-\newcommand{\pcouput}[1]{\textbf{Output:}\ #1}
+% Common italicised terms -- keeps species and gene names typeset correctly.
+\newcommand{\invivo}{\emph{in vivo}}
+\newcommand{\invitro}{\emph{in vitro}}
+\newcommand{\exvivo}{\emph{ex vivo}}
+\newcommand{\etal}{\emph{et al.}}
 
-\definecolor{lightGrey}{RGB}{220,220,220}
-
-% https://tex.stackexchange.com/a/1248/97712
-% https://tex.stackexchange.com/a/268845/97712
-\makeatletter
-	\let\orgdescriptionlabel\descriptionlabel%
-	\renewcommand*{\descriptionlabel}[1]{%
-		\let\orglabel\label%
-		\let\label\@gobble% chktex 21
-		\phantomsection%
-		\protected@edef\@currentlabel{#1\unskip}% chktex 21
-		\let\label\orglabel
-		\orgdescriptionlabel{#1}%
-	}
-\makeatother
-
-% https://github.com/arnomi/cryptocode/issues/5
-\AtBeginDocument{
-	\pcfixhyperref%
-	\makeatletter
-		\crefformat{@pclinenumber}{line~#2#1#3}
-		\Crefformat{@pclinenumber}{Line~#2#1#3}
-		\crefrangeformat{@pclinenumber}{lines~#3#1#4 to~#5#2#6}
-		\Crefrangeformat{@pclinenumber}{Lines~#3#1#4 to~#5#2#6}
-	\makeatother
-}
-
-\newcommand{\domain}{\mathcal{D}}
-\newcommand{\leak}{\mathcal{L}}
-\newcommand{\setup}{\algo{KGen}}
-\newcommand{\encrypt}{\algo{Enc}}
-\newcommand{\compare}{\algo{Cmp}}
-\newcommand{\tapegen}{\algo{TapeGen}}
-\newcommand{\Csharp}{%
-	{\settoheight{\dimen0}{C}C\kern-.05em \resizebox{!}{\dimen0}{\raisebox{\depth}{\#}}} % chktex 41
-}
-
-\newcommand{\?}{'\-\nobreak\hspace{0pt}}
-\newcommand{\FOne}{\ensuremath{\text{F}_1}}
-
-% https://tex.stackexchange.com/a/267089/97712
+% Full citation of your own publications, used in the Introduction.
 \newcommand{\printpublication}[1]{\AtNextCite{\defcounter{maxnames}{99}}\fullcite{#1}}
 
-\newcommand{\readerC}[5]{
-	\ifdefined\emptyApproval%
-		\reader{#1}{#2}{#3}{#4}{\rule{0.75\textwidth}{0.1mm}}
-	\else
-		\readerSigned{#1}{#2}{#3}{#4}{#5}
-	\fi
+% ---------------------------------------------------------- approval page ---
+% \readerC{ordinal}{name}{official title}{institution or empty}
+%
+% Always renders a blank signature rule. The copy submitted to ProQuest must be
+% UNSIGNED (BU guide 1.4.1); signatures are collected through DocuSign and
+% GRS attaches the signed page after review.
+%
+% Takes FOUR arguments. buthesis.sty's underlying \reader takes a fifth for the
+% signature, which is supplied here, so you never pass it yourself. An earlier
+% five-argument version silently swallowed the following token whenever a reader
+% line was written with only four -- hence the fixed arity.
+%
+% Leave the institution empty for BU faculty. BU guide 1.4.3: a reader is
+% assumed to be BU faculty unless you name another institution.
+\newcommand{\readerC}[4]{%
+	\reader{#1}{#2}{#3}{#4}{\rule{0.75\textwidth}{0.1mm}}%
 }

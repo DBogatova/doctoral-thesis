@@ -1,17 +1,30 @@
-As organizations struggle with processing vast amounts of information, outsourcing sensitive data to third parties becomes a necessity.
-Various cryptographic techniques are used in outsourced database systems to ensure data privacy while allowing for efficient querying.
-This thesis proposes a definition and components of a new secure and efficient outsourced database system, which answers various types of queries, with different privacy guarantees in different security models.
+% ============================================================================
+% ABSTRACT
+% BU guide 1.5.1: the abstract must contain a clear and brief statement of
+%   (1) the problem, (2) the procedures / methods followed, (3) the results,
+%   and (4) the conclusions.
+% There is no word limit any more, but be concise. Double spaced.
+% Do NOT include graphs, charts, tables or illustrations here (guide 1.5.3).
+% Include full proper nouns and place names -- the abstract is keyword
+% searchable in ProQuest.
+% ============================================================================
 
-This work starts with the survey of five order-preserving and order-revealing encryption schemes that can be used directly in many database indices, such as the B+ tree, and five range query protocols with various tradeoffs in terms of security and efficiency.
-The survey systematizes the state-of-the-art range query solutions in a snapshot adversary setting and offers some non-obvious observations regarding the efficiency of the constructions.
+% (1) THE PROBLEM -- what is unknown, and why it matters.
+TODO: Open with two or three sentences establishing the gap your dissertation
+addresses. State the biological or engineering question plainly, without
+citations, and without acronyms that you have not spelled out.
 
-The thesis then proceeds with \epsolute{} --- an efficient range query engine in a persistent adversary model.
-In \epsolute{}, security is achieved in a setting with a much stronger adversary where she can continuously observe everything on the server, and leaking even the result size can enable a reconstruction attack.
-\epsolute{} proposes a definition, construction, analysis, and experimental evaluation of a system that provably hides both access pattern and communication volume while remaining efficient.
+% (2) THE METHODS -- what you actually did.
+TODO: Summarize your experimental approach in three to five sentences: the
+model system, the measurement modality, the manipulation, and the analysis.
+Name the techniques explicitly, since these are the terms by which other
+researchers will find this work.
 
-The dissertation concludes with \kanon{} --- a secure similarity search engine in a snapshot adversary model.
-The work presents a construction in which the security of \acrshort{knn} queries is achieved similarly to \acrshort{ope} / \acrshort{ore} solutions --- encrypting the input with an approximate \acrlong{dcpe} scheme so that the inputs, the points in a hyperspace, are perturbed, but the query algorithm still produces accurate results.
-Analyzing the solution, we run a series of experiments to observe the tradeoff between search accuracy and attack effectiveness.
-We use \acrshort{trec} datasets and queries for the search, and track the rank quality metrics such as \acrshort{mrr} and \acrshort{ndcg}.
-For the attacks, we build an \acrshort{lstm} model that trains on the correlation between a sentence and its embedding and then predicts words from the embedding.
-We conclude on viability and practicality of the solution.
+% (3) THE RESULTS -- what you found.
+TODO: Give the principal findings of each results chapter, one to two
+sentences each. Report direction and magnitude of effects rather than
+promising that results "are presented".
+
+% (4) THE CONCLUSIONS -- what it means.
+TODO: Close with the interpretation, the limitations that genuinely constrain
+it, and the implication for the field.

@@ -1,326 +1,94 @@
-% cSpell:ignore rdbms dcpe faiss trec LSTM ndcg
-
-\newacronym%
-	{vm}
-	{VM}
-	{Virtual Machine}
-
-\newacronym%
-	{ore}
-	{ORE}
-	{Order-Revealing Encryption}
-
-\newacronym%
-	{prf}
-	{PRF}
-	{Pseudo-Random Function}
-
-\newacronym%
-	{prp}
-	{PRP}
-	{Pseudo-Random Permutation}
-
-\newacronym%
-	{sse}
-	{SSE}
-	{Searchable Symmetric Encryption}
-
-\newacronym%
-	{prg}
-	{PRG}
-	{Pseudo-Random Generator}
-
-\newacronym%
-	{pph}
-	{PPH}
-	{Property-Preserving Hash}
-
-\newacronym%
-	{ope}
-	{OPE}
-	{Order-Preserving Encryption}
-
-\newacronym%
-	{dp}
-	{DP}
-	{Differential Privacy}
-
-\newacronym%
-	{oram}
-	{ORAM}
-	{Oblivious Random Access Machine}
-
-\newacronym%
-	{hg}
-	{HG}
-	{Hypergeometric Probability Distribution}
-
-\newacronym%
-	{lpa}
-	{LPA}
-	{Laplacian Perturbation Algorithm}
-
-\newacronym%
-	{sql}
-	{SQL}
-	{Structured Query Language}
-
-\newacronym%
-	{io}
-	{I/O}
-	{Input / Output}
-
-\newacronym%
-	{rdbms}
-	{RDBMS}
-	{Relational Database Management System}
-
-\newacronym%
-	{knn}
-	{\ensuremath{k}NN}
-	{$k$-nearest-neighbor}
-
-\newacronym%
-	{dcpe}
-	{DCPE}
-	{Distance Comparison Preserving Encryption}
-
-\newacronym%
-	{cdpodb}
-	{CDP-ODB}
-	{Computationally \acrshort{dp} Outsourced Database System}
-
-\newacronym%
-	{trec}
-	{TREC}
-	{Text Retrieval Conference}
-
-\newacronym%
-	{mrr}
-	{MRR}
-	{Mean Reciprocal Rank}
-
-\newacronym%
-	{ndcg}
-	{nDCG}
-	{Normalized Discounted Cumulative Gain}
-
-\newacronym%
-	{faiss}
-	{FAISS}
-	{Facebook AI Similarity Search}
-
-\newacronym%
-	{gpu}
-	{GPU}
-	{Graphics Processing Unit}
-
-\newacronym%
-	{hipaa}
-	{HIPAA}
-	{Health Insurance Portability and Accountability Act}
-
-\newacronym%
-	{tee}
-	{TEE}
-	{Trusted Execution Environment}
-
-\newacronym%
-	{sgx}
-	{SGX}
-	{Software Guard Extensions}
-
-\newacronym%
-	{ap}
-	{AP}
-	{Access Pattern}
-
-\newacronym%
-	{cv}
-	{CV}
-	{Communication Volume}
-
-\newacronym%
-	{fpga}
-	{FPGA}
-	{Field-Programmable Gate Array}
-
-\newacronym%
-	{cdf}
-	{CDF}
-	{Cumulative Distribution Function}
-
-\newacronym%
-	{aspe}
-	{ASPE}
-	{Asymmetric Scalar-Product-Preserving Encryption}
-
-\newacronym%
-	{cpu}
-	{CPU}
-	{Central Processing Unit}
-
-\newacronym%
-	{kvs}
-	{KVS}
-	{Key-Value Store}
-
-\newacronym%
-	{pbc}
-	{PBC}
-	{Pairing-Based Crypto}
-
-\newacronym%
-	{emp}
-	{EMP-toolkit}
-	{Efficient MultiParty Computation Toolkit}
-
-\newacronym%
-	{brc}
-	{BRC}
-	{Best Range Cover}
-
-\newacronym%
-	{aws}
-	{AWS}
-	{Amazon Web Services}
-
-\newacronym%
-	{gcp}
-	{GCP}
-	{Google Cloud Platform}
-
-\newacronym%
-	{id}
-	{ID}
-	{Identifier}
-
-\newacronym%
-	{xml}
-	{XML}
-	{Extensible Markup Language}
-
-\newacronym%
-	{ssd}
-	{SSD}
-	{Solid State Drive}
-
-\newacronym%
-	{aes}
-	{AES}
-	{Advanced Encryption Standard}
-
-\newacronym%
-	{des}
-	{DES}
-	{Data Encryption Standard}
-
-\newacronym%
-	{sha}
-	{SHA}
-	{Secure Hash Algorithm}
-
-\newacronym%
-	{ecb}
-	{ECB}
-	{Electronic Codebook}
-
-\newacronym%
-	{cbc}
-	{CBC}
-	{Cipher Block Chaining}
-
-\newacronym%
-	{gcm}
-	{GCM}
-	{Galois / Counter}
-
-\newacronym%
-	{xts}
-	{XTS}
-	{\acrshort{xex}-based tweaked-codebook with ciphertext stealing}
-
-\newacronym%
-	{xex}
-	{XEX}
-	{XOR-Encrypt-XOR}
-
-\newacronym%
-	{ctr}
-	{CTR}
-	{Counter}
-
-\newacronym%
-	{iv}
-	{IV}
-	{Initialization Vector}
-
-\newacronym%
-	{nist}
-	{NIST}
-	{National Institute of Standards and Technology}
-
-\newacronym%
-	{ind-cpa}
-	{IND-CPA}
-	{Indistinguishability under \acrlong{cpa}}
-
-\newacronym%
-	{cpa}
-	{CPA}
-	{Chosen Plaintext Attack}
-
-\newacronym%
-	{cca}
-	{CCA}
-	{Chosen Ciphertext Attack}
-
-\newacronym%
-	{ind-cca}
-	{IND-CCA}
-	{Indistinguishability under \acrlong{cca}}
-
-\newacronym%
-	{lstm}
-	{LSTM}
-	{Long Short-Term Memory}
-
-\newacronym%
-	{ram}
-	{RAM}
-	{Random Access Memory}
-
-\newacronym%
-	{os}
-	{OS}
-	{Operating System}
-
-\newacronym%
-	{ml}
-	{ML}
-	{Machine Learning}
-
-\newacronym%
-	{bert}
-	{BERT}
-	{Bidirectional Encoder Representation from Transformer}
-
-\newacronym%
-	{nlp}
-	{NLP}
-	{Natural Language Processing}
-
-\newacronym%
-	{api}
-	{API}
-	{Application Programming Interface}
-
-\newacronym%
-	{mlc}
-	{MLC}
-	{Multi-Label Classification}
-
-\newacronym%
-	{msp}
-	{MSP}
-	{Multi-Set Prediction}
+% ============================================================================
+% LIST OF ABBREVIATIONS
+%
+% BU guide 1.1.7: "If you include a List of Abbreviations, it must be arranged
+% alphabetically, not by order of appearance of the abbreviation in the text."
+% The glossaries package sorts alphabetically automatically, so simply add
+% entries wherever is convenient.
+%
+% Usage in the text:
+%   \acrshort{bold}   -> BOLD
+%   \acrlong{bold}    -> blood oxygenation level dependent
+%   \acrfull{bold}    -> blood oxygenation level dependent (BOLD)
+%   \gls{bold}        -> spells it out the first time, then abbreviates
+%   \acrshortpl{roi}  -> ROIs (plural)
+%
+% \glsaddall in preamble.tex forces every entry to appear in the list even if
+% it is never cited. Delete entries you do not use, or drop \glsaddall.
+%
+% TODO: this is a generic neuroscience / BME starter set. Prune it and add the
+% abbreviations your own chapters actually use.
+% ============================================================================
+
+% Only abbreviations you actually cite in the text (with \acrshort, \gls, etc.)
+% appear in the List of Abbreviations. That is usually what you want: a list of
+% abbreviations you never use would be padding. If you would rather force every
+% entry below into the list, uncomment the next line.
+% \glsaddall
+
+% ------------------------------------------------------------- imaging ------
+\newacronym{bold}{BOLD}{blood oxygenation level dependent}
+\newacronym{fmri}{fMRI}{functional magnetic resonance imaging}
+\newacronym{mri}{MRI}{magnetic resonance imaging}
+\newacronym{oct}{OCT}{optical coherence tomography}
+\newacronym{nirs}{NIRS}{near-infrared spectroscopy}
+\newacronym{fnirs}{fNIRS}{functional near-infrared spectroscopy}
+\newacronym{osa}{OSA}{oxygen-sensitive absorption}
+\newacronym{tpm}{2PM}{two-photon microscopy}
+\newacronym{tplsm}{TPLSM}{two-photon laser scanning microscopy}
+\newacronym{psf}{PSF}{point spread function}
+\newacronym{na}{NA}{numerical aperture}
+\newacronym{fov}{FOV}{field of view}
+\newacronym{snr}{SNR}{signal-to-noise ratio}
+\newacronym{cbf}{CBF}{cerebral blood flow}
+\newacronym{cbv}{CBV}{cerebral blood volume}
+\newacronym{cmro}{CMRO\textsubscript{2}}{cerebral metabolic rate of oxygen}
+\newacronym{po}{pO\textsubscript{2}}{partial pressure of oxygen}
+\newacronym{so}{SO\textsubscript{2}}{oxygen saturation}
+\newacronym{hbo}{HbO}{oxygenated hemoglobin}
+\newacronym{hbr}{HbR}{deoxygenated hemoglobin}
+
+% ------------------------------------------------------- indicators ---------
+\newacronym{geci}{GECI}{genetically encoded calcium indicator}
+\newacronym{gevi}{GEVI}{genetically encoded voltage indicator}
+\newacronym{gfp}{GFP}{green fluorescent protein}
+\newacronym{rfp}{RFP}{red fluorescent protein}
+\newacronym{aav}{AAV}{adeno-associated virus}
+\newacronym{cre}{Cre}{causes recombination recombinase}
+\newacronym{dreadd}{DREADD}{designer receptor exclusively activated by designer drugs}
+\newacronym{cno}{CNO}{clozapine-N-oxide}
+\newacronym{chr}{ChR2}{channelrhodopsin-2}
+
+% ----------------------------------------------------------- anatomy --------
+\newacronym{cns}{CNS}{central nervous system}
+\newacronym{pfc}{PFC}{prefrontal cortex}
+\newacronym{sone}{S1}{primary somatosensory cortex}
+\newacronym{vone}{V1}{primary visual cortex}
+\newacronym{lfive}{L5}{cortical layer 5}
+\newacronym{roi}{ROI}{region of interest}
+\newacronym{bbb}{BBB}{blood--brain barrier}
+
+% ------------------------------------------------------ electrophysiology ---
+\newacronym{lfp}{LFP}{local field potential}
+\newacronym{eeg}{EEG}{electroencephalography}
+\newacronym{ecog}{ECoG}{electrocorticography}
+\newacronym{epsp}{EPSP}{excitatory postsynaptic potential}
+\newacronym{ipsp}{IPSP}{inhibitory postsynaptic potential}
+\newacronym{ap}{AP}{action potential}
+
+% ---------------------------------------------------------- analysis --------
+\newacronym{anova}{ANOVA}{analysis of variance}
+\newacronym{glm}{GLM}{general linear model}
+\newacronym{lme}{LME}{linear mixed-effects model}
+\newacronym{sem}{SEM}{standard error of the mean}
+\newacronym{sd}{SD}{standard deviation}
+\newacronym{ci}{CI}{confidence interval}
+\newacronym{pca}{PCA}{principal component analysis}
+\newacronym{fdr}{FDR}{false discovery rate}
+\newacronym{hrf}{HRF}{hemodynamic response function}
+
+% --------------------------------------------------------- regulatory ------
+\newacronym{iacuc}{IACUC}{Institutional Animal Care and Use Committee}
+\newacronym{arrive}{ARRIVE}{Animal Research: Reporting of In Vivo Experiments}
+\newacronym{nih}{NIH}{National Institutes of Health}
+\newacronym{bu}{BU}{Boston University}

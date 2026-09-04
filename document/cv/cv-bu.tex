@@ -1,0 +1,159 @@
+% ============================================================================
+% BU-COMPLIANT BUILD OF THE STANDALONE RESUME
+%
+% Source of truth: ~/Desktop/resume-2025/resume
+% This wrapper re-typesets that resume with the margins BU requires, and is
+% compiled by ./build-cv.sh into ../graphics/cv.pdf, which endmatter/cv.tex
+% then includes as the Curriculum Vitae of the dissertation.
+%
+% Why not just \includepdf the resume's own main_resume.pdf?
+% Its geometry is left/right 0.75in and top/bottom 0.5in, and it sets
+% \pagestyle{empty}. BU requires top 1.5in, left 1.5in, right 1in, bottom 1in
+% and a page number on every page. Scaling the existing PDF down to fit would
+% shrink its 11pt body text to roughly 9.4pt, below the 10pt floor set by
+% BU guide 1.1.2 -- so it is re-typeset at full size instead.
+%
+% Everything else (layout, burgundy headings, FontAwesome icons, section
+% order) is inherited unchanged from the resume sources, so editing the resume
+% and re-running ./build-cv.sh updates the dissertation.
+% ============================================================================
+
+\documentclass{resume}
+
+% Override resume.cls geometry with the BU margins.
+% Bottom is 1.1in rather than 1.0in to leave headroom for descenders, and the
+% page number sits inside that band, added by pdfpages in endmatter/cv.tex.
+\geometry{
+	paperwidth  = 8.5in,
+	paperheight = 11in,
+	left        = 1.5in,
+	right       = 1in,
+	top         = 1.5in,
+	bottom      = 1.1in
+}
+
+% Keep links black: the dissertation PDF submitted to ProQuest reads better
+% without coloured hyperlinks, and the resume's burgundy is decorative.
+\hypersetup{hidelinks}
+
+% resume.cls sets \hyphenpenalty=10000 to stop words breaking across lines.
+% A side effect is that long DOI strings cannot break either, and they then run
+% past the 1in right margin, which BU guide 1.1.3 forbids outright ("Do not
+% exceed the right hand 1-inch margin").
+%
+% In publications.tex the DOIs are written as \href{<url>}{<same url>}, so the
+% visible text is ordinary text rather than \url{...} and xurl alone cannot
+% break it. Patch \href so that when the link text is identical to the target
+% -- the bare-DOI case -- it is typeset with \nolinkurl, which xurl allows to
+% break after any character. Links whose text differs from the target (the lab
+% website, the Dolia repository, the Bachelor's thesis) pass through untouched,
+% so their formatting and colour survive.
+\usepackage{xurl}
+\usepackage{etoolbox}
+\urlstyle{same} % break like a URL, but keep the surrounding roman font
+
+% The Publications, Lab Skills and Technical Skills sections are built with
+% tabularx (see \tableEnv / \tableEnvPlain in resume.cls). A tabularx is a
+% single unbreakable box, so when one does not fit in the space left on a page
+% it jumps to the next one whole, stranding its section heading above a large
+% gap -- at BU margins the Publications table left about 3.8 inches blank.
+% ltablex reimplements tabularx on top of longtable so the same tables can
+% break across pages; \keepXColumns preserves the auto-sizing X column, which
+% ltablex would otherwise downgrade to a plain l column.
+\usepackage{ltablex}
+\keepXColumns
+
+% Keep a section heading with its content. Without this, a heading that lands
+% near the foot of a page is left stranded there while its body starts on the
+% next page. Requiring four lines of room forces the heading to move down with
+% its content instead. Worth having because the resume changes often and its
+% pagination shifts with it.
+\usepackage{needspace}
+\renewenvironment{rSection}[1]{%
+	\needspace{4\baselineskip}%
+	\section*{#1}\vspace{-0.4em}\hrule\vspace{0.6em}%
+}{\vspace{0.2em}}
+
+\let\BUoriginalHref\href
+\renewcommand{\href}[2]{%
+	\ifstrequal{#1}{#2}%
+		{\BUoriginalHref{#1}{\nolinkurl{#2}}}%
+		{\BUoriginalHref{#1}{#2}}%
+}
+
+\begin{document}
+
+	% BU guide 1.1.6 names this section the Vita / Curriculum Vitae. Give it a
+	% heading so a format reviewer can find it and so the Table of Contents
+	% entry in main.tex points at something visible.
+	\begin{center}
+		{\Large\bfseries Curriculum Vitae}
+	\end{center}
+	\vspace{0.5em}
+
+	% ------------------------------------------------------------------------
+	% Neutralize hand-placed page breaks while reading the resume sections.
+	%
+	% work_experience.tex contains a bare \newpage that was tuned to the
+	% resume's own geometry (0.75in sides, 0.5in top). At the BU margins set
+	% above the text block is narrower and taller, so that break no longer
+	% falls at the foot of a page -- it fired with about 7 inches of page left,
+	% leaving a large blank gap in the middle of the CV.
+	%
+	% Letting the text flow naturally is what we want here, so \newpage,
+	% \clearpage and \pagebreak are turned into harmless \par during the
+	% \input calls and restored immediately afterwards. They must be restored,
+	% because \end{document} issues a \clearpage of its own.
+	%
+	% The resume project itself is left completely untouched, so its standalone
+	% PDF keeps the pagination you tuned by hand.
+	% ------------------------------------------------------------------------
+	\let\BUrealNewpage\newpage
+	\let\BUrealClearpage\clearpage
+	\let\BUrealPagebreak\pagebreak
+	\renewcommand{\newpage}{\par}
+	\renewcommand{\clearpage}{\par}
+	\renewcommand{\pagebreak}{\par}
+
+	% ------------------------------------------------------------------------
+	% Section order mirrors main_resume.tex from the resume project.
+	% If you add or reorder sections there, mirror the change here.
+	% ------------------------------------------------------------------------
+	\input{sections/header.tex}
+	\input{sections/current_research.tex}
+	\input{sections/education.tex}
+	\input{sections/work_experience.tex}
+	\input{sections/publications.tex}
+	\input{sections/poster_presentations.tex}
+	\input{sections/lab_skills.tex}
+	\input{sections/tech_skills.tex}
+	\input{sections/awards.tex}
+	\input{sections/languages.tex}
+	\input{sections/leadership.tex}
+
+	% ------------------------------------------------------------------------
+	% References are commented out ON PURPOSE.
+	%
+	% Two reasons:
+	%  1. Length. With this section the CV runs to five pages, and it is the
+	%     only thing on the fifth -- leaving roughly 7 inches of that page
+	%     blank. BU guide 1.9 asks candidates to "try to limit the vita to
+	%     three or four pages"; without it the CV is exactly four.
+	%  2. Convention. Guide 1.9 lists what a vita should contain -- full name,
+	%     contact address, prior education, degrees, awards and honours,
+	%     professional positions, publications. Referees are not among them,
+	%     and a dissertation vita does not normally carry them, since the
+	%     document is published openly through ProQuest and OpenBU along with
+	%     your referees' phone numbers.
+	%
+	% Your standalone resume is unaffected and still includes them.
+	% To put them back in the dissertation, uncomment the line below and
+	% re-run build-cv.sh; expect a five-page CV.
+	% ------------------------------------------------------------------------
+	% \input{sections/references.tex}
+
+	\let\newpage\BUrealNewpage
+	\let\clearpage\BUrealClearpage
+	\let\pagebreak\BUrealPagebreak
+
+\end{document}

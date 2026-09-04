@@ -9,5 +9,8 @@
 			"%TEX%"
 		]
 	},
-	"latex-workshop.view.pdf.viewer": "external"
+	"latex-workshop.view.pdf.viewer": "external",
+	"cSpell.words": [
+		"Ayla"
+	]
 }

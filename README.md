@@ -1,39 +1,115 @@
-# Secure and Efficient Query Processing in Outsourced Databases
+# Doctoral Dissertation — Daria Bogatova
 
-As organizations struggle with processing vast amounts of information, outsourcing sensitive data to third parties becomes a necessity.
-Various cryptographic techniques are used in outsourced database systems to ensure data privacy while allowing for efficient querying.
-This thesis proposes a definition and components of a new secure and efficient outsourced database system, which answers various types of queries, with different privacy guarantees in different security models.
+Boston University, Graduate School of Arts and Sciences, 2027.
 
-This work starts with the survey of five order-preserving and order-revealing encryption schemes that can be used directly in many database indices, such as the B+ tree, and five range query protocols with various tradeoffs in terms of security and efficiency.
-The survey systematizes the state-of-the-art range query solutions in a snapshot adversary setting and offers some non-obvious observations regarding the efficiency of the constructions.
+LaTeX source for my doctoral dissertation. The formatting machinery
+(`document/style/buthesis.sty`, the title / copyright / approval / abstract page
+layouts, margins and pagination) is inherited from Dmytro Bogatov's 2022 BU
+dissertation, which passed BU Mugar Library format review as-is.
 
-The thesis then proceeds with Epsolute - an efficient range query engine in a persistent adversary model.
-In Epsolute, security is achieved in a setting with a much stronger adversary where she can continuously observe everything on the server, and leaking even the result size can enable a reconstruction attack.
-Epsolute proposes a definition, construction, analysis, and experimental evaluation of a system that provably hides both access pattern and communication volume while remaining efficient.
+## Layout
 
-The dissertation concludes with k-anon - a secure similarity search engine in a snapshot adversary model.
-The work presents a construction in which the security of kNN queries is achieved similarly to OPE / ORE solutions - encrypting the input with an approximate Distance Comparison Preserving Encryption scheme so that the inputs, the points in a hyperspace, are perturbed, but the query algorithm still produces accurate results.
-Analyzing the solution, we run a series of experiments to observe the tradeoff between search accuracy and attack effectiveness.
-We use TREC datasets and queries for the search, and track the rank quality metrics such as MRR and nDCG.
-For the attacks, we build an LSTM model that trains on the correlation between a sentence and its embedding and then predicts words from the embedding.
-We conclude on viability and practicality of the solution.
+```
+document/
+├── main.tex              # document skeleton and preliminary-page order
+├── meta.tex              # title, author, degrees, readers, major professor
+├── preamble.tex          # packages, macros, bibliography and glossary setup
+├── glossary.tex          # List of Abbreviations entries
+├── bibfile.bib           # bibliography database
+├── frontmatter/
+│   ├── abstract.tex      # required
+│   ├── acknowledgments.tex
+│   └── dedication.tex    # optional; delete the file to drop the page
+├── sections/
+│   ├── introduction.tex
+│   ├── methods.tex       # Materials and Methods
+│   ├── study-one.tex     # results chapter
+│   ├── study-two.tex     # results chapter
+│   └── discussion.tex
+├── endmatter/
+│   ├── appendix-supplementary.tex
+│   └── cv.tex            # required of all candidates; must be last
+├── cv/
+│   ├── cv-bu.tex         # re-typesets the resume at BU margins
+│   └── build-cv.sh       # regenerates graphics/cv.pdf from the resume project
+├── figures/              # one .tex wrapper per figure
+├── graphics/             # figure artwork (\graphicspath points here)
+└── style/buthesis.sty    # BU formatting — do not edit
+```
+
+## Curriculum Vitae
+
+The CV is generated from the standalone resume project, which stays the single
+source of truth. It is **not** edited inside this repository.
+
+```bash
+# 1. edit ~/Desktop/resume-2025/resume as usual
+# 2. regenerate the CV at BU margins
+bash document/cv/build-cv.sh
+# 3. rebuild the dissertation
+bash document/build.sh
+```
+
+`build-cv.sh` locates the resume through `TEXINPUTS` (override with
+`RESUME_DIR=/path/to/resume`), re-typesets it via `document/cv/cv-bu.tex` with
+top 1.5″ / left 1.5″ / right 1″ margins, and writes `document/graphics/cv.pdf`.
+`endmatter/cv.tex` then includes that PDF, adding a page number to each page.
+
+It re-typesets rather than scaling the resume's own `main_resume.pdf`, whose
+0.75″ margins would have to shrink to fit — dropping the 11 pt body text to
+about 9.4 pt, below the 10 pt floor in guide §1.1.2. The script warns if the CV
+exceeds the three-to-four pages suggested by guide §1.9.
 
 ## How to compile
 
-The up-to-date version of the paper is built in CI and resides as artifact.
-
-> To view the latest PDF, click on a badge `PDF | view online` at the top of the project page in GitLab.
-
 ```bash
-bash ./document/build.sh # to compile
-bash ./document/build.sh -f # to compile in fast mode
-bash ./document/build.sh -d # to compile in draft mode
-open ./document/dist/*.pdf # to open
+bash ./document/build.sh      # full build
+bash ./document/build.sh -f   # fast: keeps aux files, much quicker rebuilds
+bash ./document/build.sh -d   # draft: PDF graphics downsampled to PNG
+open ./document/dist/report.pdf
 ```
 
-*Fast mode* does not remove auxiliary files, so the subsequent recompilations are much faster.
+Draft mode needs `imagemagick` (`brew install imagemagick`).
 
-*Draft mode* converts all PDF graphics into low-res PNG (output file is `report-draft.pdf`).
-Draft mode requires `imagemagick` to be installed (`brew install` or `apt-get install`).
+If using Overleaf, run `git config core.fileMode false`, then
+`chmod +x ./document/build.sh ./test.sh`.
 
-If using with Overleaf, it is suggested to run `git config core.fileMode false` and then `chmod +x ./document/build.sh ./test.sh`.
+## BU formatting requirements
+
+The authoritative document is the *BU Guide for Writers of Theses and
+Dissertations* (Mugar Library, revised August 2026):
+<https://library.bu.edu/theses>
+
+Requirements this template already satisfies:
+
+- Top margin 1.5″, left 1.5″, right 1″, bottom 1″; 8.5″×11″, single sided
+- Title / copyright / approval pages counted as i–iii with no printed number
+- Preliminary pages iv onward in lower-case Roman, bottom centre
+- Main text in Arabic starting at 1, top centre, continuous through the
+  appendices, bibliography and CV
+- Preliminary page order per guide §1.1.6
+- Lists in the required order: Tables, Figures, Abbreviations
+- List of Abbreviations sorted alphabetically, not by order of appearance
+- Appendices before the bibliography; CV last
+- Approval page rendered **unsigned** with blank signature rules — signatures
+  are collected separately through DocuSign
+- All fonts embedded
+
+Things to check before submitting:
+
+- Delete the List of Tables / List of Figures if the final document has none;
+  keep them if it has any. Both are currently enabled in `main.tex`.
+- If you are registered in **Biomedical Engineering** rather than a GRS
+  program, `\department` in `meta.tex` must read `College of Engineering`.
+- Consider setting `colorlinks=false` in `preamble.tex` for the submitted PDF.
+- Note any previously published chapters on the copyright page (guide §1.3.2).
+
+## Submission checklist
+
+1. Email the formatted draft PDF to `grsrec@bu.edu` **at least three weeks
+   before the defense** for format review.
+2. Collect reader signatures through DocuSign.
+3. Submit the final PDF via ProQuest ETD (`etdadmin.com/bu`), keeping the
+   approval page unsigned in the uploaded file.
+4. Pay the $115 library processing fee and complete the contact form,
+   BU Doctoral Exit Survey and Survey of Earned Doctorates.

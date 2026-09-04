@@ -1,0 +1,267 @@
+\chapter{Materials and Methods}\label{chapter:methods}
+\thispagestyle{myheadings}
+
+	% ========================================================================
+	% MATERIALS AND METHODS
+	%
+	% This is the chapter that a biology / BME dissertation needs and that the
+	% GRS Word template does not model. Neither the Mugar formatting guide nor
+	% the GRS template prescribes any chapter structure -- that comes from your
+	% committee -- but the skeleton below follows the standard order used in
+	% neurophotonics and systems-neuroscience dissertations.
+	%
+	% Two rules of thumb worth respecting:
+	%
+	%  1. WRITE FOR REPLICATION. Every number a person would need in order to
+	%     repeat the experiment belongs here: concentrations, volumes,
+	%     coordinates, wavelengths, powers, frame rates, durations, ages,
+	%     weights, catalogue numbers, software versions. If you find yourself
+	%     writing "standard procedures were followed", replace it with the
+	%     procedure.
+	%
+	%  2. MATCH THE MANUSCRIPT, THEN EXPAND. A dissertation methods chapter is
+	%     normally the union of the methods sections of your papers, restored
+	%     to full length. Journals cut methods for space; here you have none of
+	%     that pressure, so put back the pilot experiments, the failed
+	%     variants, the calibration procedures and the decision rules.
+	%
+	% Use \SI{} for every quantity so that units are typeset consistently:
+	%     \SI{2}{\micro\liter}   \SI{920}{\nano\meter}   \SI{30}{\hertz}
+	%     \SIrange{8}{12}{\week} \SI{0.5}{\milli\gram\per\kilogram}
+	%     \ang{45}               \SI{37}{\celsius}
+	%
+	% Delete every section below that does not apply to your work, and add
+	% sections for techniques that are missing.
+	% ========================================================================
+
+	This chapter describes the animals, surgical preparations, instrumentation,
+	experimental designs, and analysis procedures common to
+	\cref{chapter:study-one,chapter:study-two}.
+	Procedures specific to a single study are described in the corresponding
+	chapter.
+
+	% ------------------------------------------------------------------------
+	\section{Animals and ethical approval}\label{section:methods:animals}
+
+		TODO: State the approving body and protocol number, the guidelines
+		followed, the species, strain and source, the genotypes, the sex
+		distribution, the age and weight range at the time of experiment, and
+		the housing conditions.
+
+		A model paragraph, for you to adapt:
+
+		\begin{quote}
+			All procedures were approved by the \acrshort{iacuc} of Boston
+			University (protocol TODO) and conducted in accordance with the
+			\acrshort{nih} \emph{Guide for the Care and Use of Laboratory
+			Animals}. Reporting follows the \acrshort{arrive} guidelines.
+			Experiments used TODO adult mice of both sexes
+			(\nanimals{\textrm{TODO}} animals; TODO female, TODO male), aged
+			\SIrange{8}{16}{\week} and weighing
+			\SIrange{20}{30}{\gram} at the time of surgery. Animals were
+			housed TODO per cage on a TODO light/dark cycle at
+			\SI{22}{\celsius} with food and water available \emph{ad libitum}.
+		\end{quote}
+
+		\subsection{Mouse lines}\label{section:methods:animals:lines}
+
+			TODO: Give the full formal strain name, the common name, the JAX or
+			MMRRC stock number, and the breeding scheme for each line. State
+			how genotype was confirmed.
+
+		\subsection{Randomization, blinding and exclusion criteria}
+
+			TODO: State how animals were assigned to groups, whether the
+			experimenter or analyst was blinded, and the criteria by which
+			animals or sessions were excluded. Report how many were excluded
+			and why. Reviewers and committees ask about this, and deciding it
+			after the fact is much harder than writing it down now.
+
+	% ------------------------------------------------------------------------
+	\section{Surgical procedures}\label{section:methods:surgery}
+
+		\subsection{Anesthesia and analgesia}
+
+			TODO: Induction and maintenance agents with doses and routes,
+			depth-of-anesthesia monitoring, body temperature maintenance, eye
+			protection, and the peri- and post-operative analgesia regimen
+			with doses and durations.
+
+		\subsection{Cranial window implantation}
+
+			TODO: Stereotaxic coordinates relative to bregma, craniotomy
+			diameter and location, dura handling, window material and
+			thickness, sealing method, headpost or headplate type, and the
+			recovery period before imaging.
+
+		\subsection{Viral injections}\label{section:methods:surgery:virus}
+
+			TODO: For each construct give the full name, the serotype, the
+			source and catalogue or Addgene number, the titre in genome copies
+			per millilitre, the injection coordinates and depths, the volume,
+			the infusion rate, the pipette type, the wait time before
+			withdrawal, and the expression interval before experiments.
+
+			% Example table. Delete if unused -- but if you keep ANY table,
+			% the List of Tables in main.tex is required.
+			\begin{table}[htbp]
+				\centering
+				\caption[Viral constructs]{
+					Viral constructs used in this dissertation.
+					TODO: replace with your own.
+				}\label{table:methods:constructs}
+				\begin{tabular}{llll}
+					\toprule
+					Construct & Serotype & Titre (GC/mL) & Source \\
+					\midrule
+					TODO & TODO & TODO & TODO \\
+					TODO & TODO & TODO & TODO \\
+					\bottomrule
+				\end{tabular}
+			\end{table}
+
+		\subsection{Chronic preparation and habituation}
+
+			TODO: Handling schedule, habituation to head fixation, number and
+			duration of sessions before data collection, and the criteria an
+			animal had to meet before being included.
+
+	% ------------------------------------------------------------------------
+	\section{Optical instrumentation}\label{section:methods:optics}
+
+		\subsection{Two-photon microscope}
+
+			TODO: Describe the microscope as a light path. Laser make, model
+			and tuning range; excitation wavelength and pulse width; power
+			measured at the sample and how it was measured; objective
+			magnification, \acrshort{na} and immersion medium; scanner type;
+			dichroics and emission filters with centre wavelengths and
+			bandwidths; detector type; and the acquisition software with
+			version.
+
+			TODO: State the resulting resolution explicitly, e.g. lateral and
+			axial \acrshort{psf} full width at half maximum measured on
+			sub-resolution beads.
+
+		\subsection{Wide-field and intrinsic optical imaging}
+
+			TODO: Illumination source and wavelengths, camera model, sensor
+			binning, exposure, frame rate, and the resulting
+			\si{\micro\meter\per\pixel} calibration.
+
+		\subsection{Optogenetic and chemogenetic stimulation}
+
+			TODO: For optogenetics: wavelength, source, fibre or free-space
+			delivery, spot size, irradiance at the tissue in
+			\si{\milli\watt\per\square\milli\meter}, pulse width, frequency,
+			train duration, and duty cycle. For chemogenetics: compound, dose,
+			vehicle, route, and the interval between administration and
+			recording, plus the vehicle-only control.
+
+		\subsection{Physiological monitoring}
+
+			TODO: Heart rate, respiration, arterial oxygen saturation, body
+			temperature and blood gases as applicable, with instruments and
+			sampling rates. State the physiological ranges you required for a
+			session to be included.
+
+	% ------------------------------------------------------------------------
+	\section{Experimental design}\label{section:methods:design}
+
+		TODO: Describe a session from the animal's point of view: what
+		happened, in what order, for how long, and how many times. Give trial
+		counts, inter-trial intervals, block structure, stimulus parameters,
+		and the order in which conditions were presented. State the control
+		conditions and what they control for.
+
+		TODO: State how the sample size was determined. If a power analysis was
+		performed, give the assumed effect size, alpha, power and the resulting
+		n. If the sample size followed prior work or practical constraints, say
+		so honestly -- that is a normal and acceptable answer.
+
+	% ------------------------------------------------------------------------
+	\section{Data acquisition}\label{section:methods:acquisition}
+
+		TODO: Sampling rates and bit depths for every channel, the
+		synchronisation scheme between imaging, stimulation and behaviour,
+		measured latencies or jitter, file formats, and total data volume.
+
+	% ------------------------------------------------------------------------
+	\section{Data processing}\label{section:methods:processing}
+
+		TODO: Present the pipeline as an ordered list of transformations from
+		raw files to the numbers that enter your statistics. Name every piece
+		of software with its version, and state every parameter you did not
+		leave at its default.
+
+		\subsection{Motion correction and registration}
+
+			TODO: Algorithm, reference image construction, rigid versus
+			non-rigid, and the residual-motion criterion for discarding a
+			session.
+
+		\subsection{Segmentation and signal extraction}
+
+			TODO: How \acrshortpl{roi} were defined -- manually, semi-automatically
+			or by algorithm -- with the software and parameters. Neuropil or
+			background subtraction and its coefficient. Bleaching correction.
+			The exact definition of your normalised signal, written as an
+			equation so there is no ambiguity:
+
+			\begin{equation}\label{equation:methods:dff}
+				\frac{\Delta F}{F_0}(t) = \frac{F(t) - F_0}{F_0},
+			\end{equation}
+
+			where $F(t)$ is the TODO-corrected fluorescence and $F_0$ is
+			defined as TODO over the baseline window TODO.
+
+		\subsection{Event detection}
+
+			TODO: Detection method, threshold and how it was chosen, minimum
+			event duration and amplitude, and how overlapping events were
+			handled. Report the false-positive rate if you estimated one.
+
+		\subsection{Quantified outcome measures}
+
+			TODO: Define each dependent variable operationally. "Response
+			amplitude" is not a definition; "mean $\Delta F/F_0$ over
+			\SIrange{0.5}{2.0}{\second} after stimulus onset, minus the mean
+			over the \SI{1}{\second} preceding it" is.
+
+	% ------------------------------------------------------------------------
+	\section{Statistical analysis}\label{section:methods:statistics}
+
+		TODO: For each comparison state the test, the software, what the unit
+		of analysis was, and how you handled the fact that cells, trials and
+		sessions are nested within animals. Pooling cells across animals as if
+		they were independent observations is the single most common
+		statistical criticism in this field; if you used a mixed-effects model
+		with animal as a random effect, say so here.
+
+		TODO: State how normality and equal variance were assessed and what you
+		did when they failed. Give the multiple-comparison correction and the
+		family over which it was applied. State the alpha level. Say whether
+		tests were one- or two-tailed.
+
+		TODO: State what your error bars represent -- \acrshort{sem},
+		\acrshort{sd} or \acrshort{ci} -- and use the same convention in every
+		figure. Report exact $p$ values rather than inequalities, effect sizes
+		with confidence intervals, and the $n$ for both animals and cells at
+		every comparison.
+
+	% ------------------------------------------------------------------------
+	\section{Histology}\label{section:methods:histology}
+
+		TODO: Perfusion protocol, fixative, post-fixation, sectioning method
+		and thickness, antibodies with host species, catalogue numbers,
+		dilutions and incubation conditions, counterstains, mounting medium,
+		and the microscope used for verification. State how expression or
+		targeting was confirmed and how many animals were excluded because it
+		was not.
+
+	% ------------------------------------------------------------------------
+	\section{Data and code availability}\label{section:methods:availability}
+
+		TODO: Repository, accession or DOI, licence, and what a reader would
+		have to do to reproduce the figures. Many journals now require this,
+		and committees increasingly ask for it.
