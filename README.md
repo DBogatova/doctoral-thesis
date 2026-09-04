@@ -33,6 +33,7 @@ document/
 │   └── cv.tex            # required of all candidates; must be last
 ├── cv/
 │   ├── cv-bu.tex         # re-typesets the resume at BU margins
+│   ├── extract-links.swift  # recovers cv.pdf hyperlinks for \includepdf
 │   └── build-cv.sh       # regenerates graphics/cv.pdf from the resume project
 ├── figures/              # one .tex wrapper per figure
 ├── graphics/             # figure artwork (\graphicspath points here)
@@ -61,6 +62,26 @@ It re-typesets rather than scaling the resume's own `main_resume.pdf`, whose
 0.75″ margins would have to shrink to fit — dropping the 11 pt body text to
 about 9.4 pt, below the 10 pt floor in guide §1.1.2. The script warns if the CV
 exceeds the three-to-four pages suggested by guide §1.9.
+
+### Clickable links in the CV
+
+`\includepdf` places pages as graphics and **discards their annotations**, so
+every hyperlink in the CV would be dead inside the dissertation. The usual
+remedy is the `pax` package, but its extractor needs a Java runtime.
+
+Instead, `build-cv.sh` runs `cv/extract-links.swift`, which reads the link
+rectangles out of `cv.pdf` with PDFKit and writes `graphics/cv-links.tex`.
+`endmatter/cv.tex` inputs that and lays the links back over the placed pages as
+real annotations, positioned from the source PDF's own coordinates. It adds no
+ink — the boxes are invisible struts.
+
+This regenerates automatically whenever the CV is rebuilt, so it survives edits
+to the resume. If `swiftc` is unavailable the step is skipped with a warning and
+the thesis still builds, just without clickable CV links. Verify with:
+
+```bash
+bash document/cv/build-cv.sh     # reports how many links it found
+```
 
 ## Software section
 

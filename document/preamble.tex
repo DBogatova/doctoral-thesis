@@ -26,6 +26,9 @@
 \usepackage{adjustbox}
 \usepackage{rotating}
 \usepackage[final]{pdfpages}
+% Absolute page-position overlays, used by endmatter/cv.tex to restore the
+% hyperlinks that \includepdf strips from the included CV pages.
+\usepackage{eso-pic}
 
 % ------------------------------------------------------------------ tables --
 \usepackage{booktabs}

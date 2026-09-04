@@ -32,9 +32,16 @@
 	bottom      = 1.1in
 }
 
-% Keep links black: the dissertation PDF submitted to ProQuest reads better
-% without coloured hyperlinks, and the resume's burgundy is decorative.
-\hypersetup{hidelinks}
+% Links keep the resume's own accent colour (harvardburgundy, set by
+% resume.cls) rather than being blacked out. The contact line now shows LinkedIn
+% as a label rather than a spelled-out address, so if the link were not visibly
+% a link it would read as the bare word "LinkedIn" with no way to reach it and
+% no URL on the printed page.
+%
+% For a fully monochrome submission, add back:
+%     \hypersetup{hidelinks}
+% but then also change sections/header.tex to spell out an address, because a
+% black unstyled label is unreachable in print.
 
 % resume.cls sets \hyphenpenalty=10000 to stop words breaking across lines.
 % A side effect is that long DOI strings cannot break either, and they then run

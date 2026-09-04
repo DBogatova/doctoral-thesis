@@ -24,12 +24,32 @@
 \phantomsection%
 \addcontentsline{toc}{chapter}{Curriculum \texorpdfstring{Vit\ae}{Vitae}}
 
+% \includepdf discards the annotations of the pages it places, so the CV's
+% hyperlinks would be dead here. build-cv.sh regenerates graphics/cv-links.tex
+% from cv.pdf, which defines \CVlinks{<page>} to lay the links back on top as
+% real annotations.
+%
+% Order matters: the generated file defines \CVlinks with \providecommand, so
+% the fallback below MUST come second. Defining the no-op first would shadow the
+% real definition and silently drop every link.
+\IfFileExists{graphics/cv-links.tex}{\input{graphics/cv-links}}{}
+\providecommand{\CVlinks}[1]{}
+
+% Counts the CV pages as pdfpages places them, so \CVlinks knows which page's
+% links to draw. pdfpages does not expose the source page number itself.
+\newcounter{cvpage}
+\setcounter{cvpage}{0}
+
 % pagecommand puts the dissertation's own running page number on each included
 % page -- the resume project sets \pagestyle{empty}, and BU guide 1.1.4
 % requires every page through the last page of the vita to be numbered.
 \includepdf[
 	pages         = -,
-	pagecommand   = {\thispagestyle{myheadings}},
+	pagecommand   = {%
+		\thispagestyle{myheadings}%
+		\stepcounter{cvpage}%
+		\CVlinks{\thecvpage}%
+	},
 	fitpaper      = false,
 	offset        = 0 0
 ]{graphics/cv.pdf}

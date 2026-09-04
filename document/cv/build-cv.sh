@@ -61,6 +61,32 @@ cp "$BUILD/cv-bu.pdf" "$HERE/../graphics/cv.pdf"
 
 echo "Wrote document/graphics/cv.pdf (${PAGES} pages)"
 
+# ---------------------------------------------------------------------------
+# Recreate the CV's hyperlinks for the dissertation.
+#
+# \includepdf places pages as graphics and throws their annotations away, so
+# every link in the CV would be dead inside the thesis. The pax package exists
+# for this but its extractor needs a Java runtime; this uses PDFKit instead,
+# which ships with macOS.
+#
+# Non-fatal by design: if Swift is unavailable the thesis still builds, just
+# with unclickable CV links.
+# ---------------------------------------------------------------------------
+LINKS_TEX="$HERE/../graphics/cv-links.tex"
+if command -v swiftc >/dev/null 2>&1; then
+	BIN="$BUILD/extract-links"
+	if swiftc -O "$HERE/extract-links.swift" -o "$BIN" 2>"$BUILD/swiftc.log"; then
+		"$BIN" "$HERE/../graphics/cv.pdf" "$LINKS_TEX"
+	else
+		echo "WARNING: could not compile extract-links.swift; CV links will not be clickable." >&2
+		sed -n '1,5p' "$BUILD/swiftc.log" >&2
+		printf '%% link extraction failed\n\\providecommand{\\CVlinks}[1]{}\n' > "$LINKS_TEX"
+	fi
+else
+	echo "WARNING: swiftc not found; CV links will not be clickable in the thesis." >&2
+	printf '%% swiftc unavailable\n\\providecommand{\\CVlinks}[1]{}\n' > "$LINKS_TEX"
+fi
+
 # BU guide 1.9 asks candidates to keep the vita to three or four pages.
 if [ "${PAGES:-0}" -gt 4 ]; then
 	echo
